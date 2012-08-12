@@ -1,0 +1,13 @@
+<schemalist>
+  <schema id="org.thomashc.pomodoro" path="/org/thomashc/pomodoro/" gettext-domain="pomodoro">
+
+    <key name="tasks" type="as">
+      <default>["wtf", "lol"]</default>
+      <summary>A greeting</summary>
+      <description>
+        List of tasks
+      </description>
+    </key>
+
+  </schema>
+</schemalist>
