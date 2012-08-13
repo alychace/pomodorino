@@ -6,27 +6,6 @@ All rights reserved.
 using Gtk; // For the GUI.
 using Gee; // For fancy and useful things like HashSet.
 
-public class AddTask : Dialog {
-    // Dialog window to add tasks.
-
-    public Entry entry; // Text box.
-    public AddTask() {
-        // Let's set the interface up.
-        var content = this.get_content_area() as Box;
-        var hbox = new Box(Orientation.HORIZONTAL, 20);
-        this.entry = new Entry();
-        
-        this.border_width = 5;
-        this.title = "Add Task";
-        
-        this.add_button(Stock.CLOSE, ResponseType.CLOSE);
-        this.add_button(Stock.ADD, ResponseType.ACCEPT);
-        
-        content.pack_start(hbox, false, true, 0);
-        hbox.pack_start(this.entry);
-    }
-}
-
 public class Pomodoro : Window {
     // Main Window
 
@@ -36,6 +15,7 @@ public class Pomodoro : Window {
     private ListStore store; // See above.
     private HashSet<string> tasks; // Far superior than string[], more flexible(even with conversion).
     private GLib.Settings settings; // DConf.
+    
     public Pomodoro () {
         this.tasks = new HashSet<string>(); // For some reason this magic makes everything work.
         this.settings = new GLib.Settings("org.thomashc.pomodoro");
@@ -89,14 +69,14 @@ public class Pomodoro : Window {
     private void dialog_response(Dialog source, int response_id) {
         // This makes sure we can interface with our AddTask() dialog.
         switch(response_id) {
-        case ResponseType.ACCEPT:
-            string text = this.dialog.entry.text;
-            new_task(text);
-            this.dialog.hide(); // Saves it for later use.
-            break;
-        case ResponseType.CLOSE:
-            this.dialog.hide(); // Saves it for later use.
-            break;
+            case ResponseType.ACCEPT:
+                string text = this.dialog.entry.text;
+                new_task(text);
+                this.dialog.hide(); // Saves it for later use.
+                break;
+            case ResponseType.CLOSE:
+                this.dialog.hide(); // Saves it for later use.
+                break;
         }
     }
     
@@ -151,14 +131,14 @@ public class Pomodoro : Window {
 }
 
 int main (string[] args) {
-        // Let's start up Gtk.
-        Gtk.init(ref args);
+    // Let's start up Gtk.
+    Gtk.init(ref args);
 
-        // Then let's start the main window.
-        var window = new Pomodoro(); 
-        window.destroy.connect(Gtk.main_quit);
-        window.show_all();
+    // Then let's start the main window.
+    var window = new Pomodoro(); 
+    window.destroy.connect(Gtk.main_quit);
+    window.show_all();
 
-        Gtk.main();
-        return 0;
+    Gtk.main();
+    return 0;
 }
