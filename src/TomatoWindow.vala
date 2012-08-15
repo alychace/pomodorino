@@ -6,72 +6,63 @@ All rights reserved.
 using Gtk; // For the GUI.
 using Gee; // For fancy and useful things like HashSet.
 
-public class Pomodoro : Window {
+public class TomatoTasks : Window {
     // Main Window
 
     int pos = 0;
     private AddTask dialog; // We need a dialog to add new tasks.
     private TreeIter iter; // Pain in the ass for the TreeView.
     private ListStore store; // See above.
-    private HashSet<string> tasks; // Far superior than string[], more flexible(even with conversion).
-    private GLib.Settings settings; // DConf.
+    private TomatoBase backend;
     
-    public Pomodoro () {
-        this.tasks = new HashSet<string>(); // For some reason this magic makes everything work.
-        this.settings = new GLib.Settings("org.thomashc.pomodoro");
+    public TomatoTasks () {
+        destroy.connect(quit);
+        this.backend = new TomatoBase();
         this.dialog = new AddTask(); // Makes a dialog window for adding tasks.
         this.dialog.response.connect(dialog_response);
         
-        this.title = "Pomo D'Oro";
+        this.title = "Tomato Tasks";
         this.window_position = WindowPosition.CENTER;
         set_default_size(400, 300);
         
         build_ui(); // For great organisation.
-        
-        load_config(); // Loads the tasks from DConf.
-        remove_task("Take a walk"); // Testing
+        load();
+
     }
     
-    private void load_config() {
+    private void quit() {
+        backend.save();
+        Gtk.main_quit();
+    }
+    
+    private void load() {
         // Loads tasks and configuration from DConf.
-        var saved_tasks = this.settings.get_strv("tasks");
+        backend.load();
+        var saved_tasks = backend.tasks;
         foreach (string i in saved_tasks) {
             new_task(i);
         }
     }
-
-    private void save_config() {
-        // Converts the HashSet to a string[], then saves it to DConf.
-        string[] saved_tasks = {};
-        foreach (string s in this.tasks) {
-            saved_tasks += s;
-        }
-        this.settings.set_strv("tasks", saved_tasks);
-    }
     
     private void new_task(string name) {
         // Adds a new task to the main window and the configuration.
-        this.tasks.add(name);
         this.store.append(out this.iter);
         this.store.set(this.iter, 0, "", 1, name);
-        save_config(); // Saves our work.
     }
     
-    private void remove_task(string name) {
+/*    private void remove_task(string name) {
         // Deletes a task from the main window and the configuration.
-        this.tasks.remove(name);
         this.store.clear();
-        // Time to reload, baby.
-        save_config();
-        load_config();
+        backend.remove(name);
     }
-    
+*/    
     private void dialog_response(Dialog source, int response_id) {
         // This makes sure we can interface with our AddTask() dialog.
         switch(response_id) {
             case ResponseType.ACCEPT:
                 string text = this.dialog.entry.text;
                 new_task(text);
+                backend.add(text);
                 this.dialog.hide(); // Saves it for later use.
                 break;
             case ResponseType.CLOSE:
@@ -91,6 +82,9 @@ public class Pomodoro : Window {
         
         var delete_button = new ToolButton.from_stock(Stock.DELETE);
         toolbar.add(delete_button);
+        
+        var preferences_button = new ToolButton.from_stock(Stock.PROPERTIES);
+        toolbar.add(preferences_button);
         
         // Then we get the TreeView set up.
         var tree_view = new TreeView();
@@ -135,8 +129,7 @@ int main (string[] args) {
     Gtk.init(ref args);
 
     // Then let's start the main window.
-    var window = new Pomodoro(); 
-    window.destroy.connect(Gtk.main_quit);
+    var window = new TomatoTasks(); 
     window.show_all();
 
     Gtk.main();

@@ -1,3 +1,8 @@
+/*
+Copyright 2012, Thomas Chace.
+All rights reserved.
+*/
+
 using Gtk; // For the GUI.
 
 public class AddTask : Dialog {

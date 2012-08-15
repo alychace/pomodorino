@@ -1,9 +1,9 @@
 <schemalist>
-  <schema id="org.thomashc.pomodoro" path="/org/thomashc/pomodoro/" gettext-domain="pomodoro">
+  <schema id="org.thomashc.tomatoes" path="/org/thomashc/tomatoes/" gettext-domain="tomatoes">
 
     <key name="tasks" type="as">
       <default>[]</default>
-      <summary>A greeting</summary>
+      <summary>Tasks</summary>
       <description>
         List of tasks
       </description>
