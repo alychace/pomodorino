@@ -1,5 +1,5 @@
 /*
-Copyright 2012, Thomas Chace.
+Copyright 2012-2014, Thomas Chace.
 All rights reserved.
 */
 
@@ -14,7 +14,7 @@ public class TomatoBase : Object {
     
     public TomatoBase () {
         this.tasks = new ArrayList<string>(); // For some reason this magic makes everything work.
-        this.settings = new GLib.Settings("org.thomashc.tomatoes");
+        this.settings = new GLib.Settings("org.thomashc.pomodorino");
         
     }
     

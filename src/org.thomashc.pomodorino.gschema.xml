@@ -1,5 +1,5 @@
 <schemalist>
-  <schema id="org.thomashc.tomatoes" path="/org/thomashc/tomatoes/" gettext-domain="tomatoes">
+  <schema id="org.thomashc.pomodorino" path="/org/thomashc/pomodorino/" gettext-domain="pomodorino">
 
     <key name="tasks" type="as">
       <default>[]</default>

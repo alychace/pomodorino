@@ -1,5 +1,5 @@
 /*
-Copyright 2012, Thomas Chace.
+Copyright 2012-2014, Thomas Chace.
 All rights reserved.
 */
 
