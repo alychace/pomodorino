@@ -1,5 +1,5 @@
 ## How to build
 	bash build.sh
 
-## Hor to run
+## How to run
 	./bin/pomodorino
