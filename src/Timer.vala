@@ -36,8 +36,8 @@ public class Timer : Dialog {
         this.label = new Gtk.Label(current + "\nYou have 25 minutes. Get to work!");
         this.progress_bar = new ProgressBar();
         
-        this.border_width = 45;
-        this.title = "25 minutes remaining...";
+        this.border_width = 12;
+        this.title = "25 minutes remaining";
         
         this.add_button(Stock.CANCEL, ResponseType.CANCEL);
         //this.add_button(Stock.ADD, ResponseType.ACCEPT);
@@ -61,8 +61,8 @@ public class Timer : Dialog {
 			progress = progress + 0.02;
 			progress_bar.set_fraction(progress);
 			double remaining = 25 - (progress * 25);
-			this.title = remaining.to_string() + " minutes remaining...";
-            this.label.label = this.task + "\n" + this.title;
+			this.title = remaining.to_string() + " minutes remaining";
+            this.label.label = this.task + "\n" + this.title + ".";
 
             if (remaining == 5.0) {
                 var notification = new Notification(this.task, this.title, "dialog-information");

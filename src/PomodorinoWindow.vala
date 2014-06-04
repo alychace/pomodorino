@@ -66,7 +66,6 @@ public class Pomodorino : Window {
 
             this.current = task;
         }
-        this.timer.set_text(this.current);
     }
     
     private void quit() {
@@ -116,16 +115,32 @@ public class Pomodorino : Window {
     }
     
     private void start_timer() {
-        timer = new Timer(this.current);
-        timer.response.connect ((response_id) => {
-        if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
-            timer.destroy();
-            this.show_all();
+        if (this.current in this.backend.tasks) {
+            timer = new Timer(this.current);
+            timer.response.connect ((response_id) => {
+                if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
+                    timer.destroy();
+                    this.show_all();
+                }
+            });
+            this.hide();
+            timer.show_all();
+            timer.fill();
+        }
+        else {
+            Gtk.MessageDialog msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "Please select a task to start.");
+            msg.response.connect ((response_id) => {
+            switch (response_id) {
+                case Gtk.ResponseType.OK:
+                    msg.destroy();
+                    break;
+                case Gtk.ResponseType.DELETE_EVENT:
+                    msg.destroy();
+                    break;
             }
-        });
-        this.hide();
-        timer.show_all();
-        timer.fill();
+            });
+            msg.show();
+        }
     }
     
     private void build_ui() {
@@ -189,8 +204,8 @@ public class Pomodorino : Window {
         vbox.pack_start(scroll, true, true, 0);
         add(vbox);
 
-        var selection = this.tree.get_selection ();
-        selection.changed.connect (this.on_changed);
+        var selection = this.tree.get_selection();
+        selection.changed.connect(this.on_changed);
     }
     
     TreeViewColumn get_column (string title) {
