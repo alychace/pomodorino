@@ -17,6 +17,7 @@
 */
 
 using Gtk; // For the GUI.
+using Notify;
 
 public class Timer : Dialog {
     // Dialog window to add tasks.
@@ -26,6 +27,7 @@ public class Timer : Dialog {
     
     public Timer() {
         // Let's set the interface up.
+        Notify.init("Pomodorino");
         var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
         this.label = new Gtk.Label("You have 25 minutes. Get to work!");
@@ -60,12 +62,30 @@ public class Timer : Dialog {
 			// Update the bar:
 			progress = progress + 0.02;
 			progress_bar.set_fraction(progress);
-			var percent = progress * 100;
-			int integer = (int)progress;
-			int remaining = 25 - (integer * 25);
+			double remaining = 25 - (progress * 25);
 			this.title = remaining.to_string() + " minutes remaining";
-			
-			stdout.printf ("Hello World\n");
+            this.label.label = this.title;
+
+            if (remaining == 5.0) {
+                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                notification.show();
+            }
+            if (remaining == 10.0) {
+                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                notification.show();
+            }
+            if (remaining == 15.0) {
+                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                notification.show();
+            }
+            if (remaining == 20.0) {
+                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                notification.show();
+            }
+            if (remaining == 25.0) {
+                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                notification.show();
+            }
 
 			// Repeat until 100%
 			return progress < 1.0;

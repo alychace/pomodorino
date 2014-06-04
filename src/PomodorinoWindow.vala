@@ -124,7 +124,7 @@ public class Pomodorino : Window {
     
     private void build_ui() {
         // Starts out by setting up the toolbar and toolbuttons.
-        //var toolbar = new ToolBar();
+        //var toolbar = new Toolbar();
         var toolbar = new HeaderBar();
         //toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
         
@@ -142,6 +142,11 @@ public class Pomodorino : Window {
         var delete_button = new ToolButton(delete_img, null);
         toolbar.add(delete_button);
         delete_button.clicked.connect(remove_task);
+
+        Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
+        var start_button = new ToolButton(start_img, null);
+        toolbar.pack_end(start_button);
+        start_button.clicked.connect(start_timer);
         
         var menu = new Gtk.Menu();
         Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
@@ -153,13 +158,8 @@ public class Pomodorino : Window {
 			      about_dialog.show();
 		});
         var menu_button = new AppMenu(menu);
-        
+
         toolbar.pack_end(menu_button);
-        
-        Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
-        var start_button = new ToolButton(start_img, null);
-        toolbar.pack_end(start_button);
-        start_button.clicked.connect(start_timer);
         
         // Then we get the TreeView set up.
         this.tree = new TreeView();
