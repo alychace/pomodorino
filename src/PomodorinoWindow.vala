@@ -42,7 +42,6 @@ public class Pomodorino : Window {
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TomatoBase();
         this.dialog = new AddTask(); // Makes a dialog window for adding tasks.
-        this.timer = new Timer();
         this.dialog.response.connect(addtask_response);
         
         this.window_position = WindowPosition.CENTER;
@@ -87,7 +86,7 @@ public class Pomodorino : Window {
     private void new_task(string name) {
         // Adds a new task to the main window and the configuration.
         this.store.append(out this.iter);
-        this.store.set(this.iter, 0, "TODO:", 1, name);
+        this.store.set(this.iter, 0, "TODO", 1, name);
     }
     
     private void remove_task() {
@@ -117,7 +116,14 @@ public class Pomodorino : Window {
     }
     
     private void start_timer() {
-        timer = new Timer();
+        timer = new Timer(this.current);
+        timer.response.connect ((response_id) => {
+        if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
+            timer.destroy();
+            this.show_all();
+            }
+        });
+        this.hide();
         timer.show_all();
         timer.fill();
     }

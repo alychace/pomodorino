@@ -24,28 +24,26 @@ public class Timer : Dialog {
 
     public ProgressBar progress_bar; // Text box.
     public Label label;
+    string task;
     
-    public Timer() {
+    public Timer(string current) {
+        this.task = current;
+        this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
         // Let's set the interface up.
         Notify.init("Pomodorino");
         var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
-        this.label = new Gtk.Label("You have 25 minutes. Get to work!");
+        this.label = new Gtk.Label(current + "\nYou have 25 minutes. Get to work!");
         this.progress_bar = new ProgressBar();
         
         this.border_width = 45;
-        this.title = "Timer";
+        this.title = "25 minutes remaining...";
         
         this.add_button(Stock.CANCEL, ResponseType.CANCEL);
         //this.add_button(Stock.ADD, ResponseType.ACCEPT);
         content.pack_start(vbox, false, true, 0);
         vbox.pack_start(label);
         vbox.pack_start(this.progress_bar);
-        this.response.connect ((response_id) => {
-        if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
-			this.destroy();
-		    }
-	    });
     }
     
     public void set_text(string x) {
@@ -63,27 +61,27 @@ public class Timer : Dialog {
 			progress = progress + 0.02;
 			progress_bar.set_fraction(progress);
 			double remaining = 25 - (progress * 25);
-			this.title = remaining.to_string() + " minutes remaining";
-            this.label.label = this.title;
+			this.title = remaining.to_string() + " minutes remaining...";
+            this.label.label = this.task + "\n" + this.title;
 
             if (remaining == 5.0) {
-                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                var notification = new Notification(this.task, this.title, "dialog-information");
                 notification.show();
             }
             if (remaining == 10.0) {
-                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                var notification = new Notification(this.task, this.title, "dialog-information");
                 notification.show();
             }
             if (remaining == 15.0) {
-                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                var notification = new Notification(this.task, this.title, "dialog-information");
                 notification.show();
             }
             if (remaining == 20.0) {
-                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                var notification = new Notification(this.task, this.title, "dialog-information");
                 notification.show();
             }
             if (remaining == 25.0) {
-                var notification = new Notification("Pomodorino", this.title, "dialog-information");
+                var notification = new Notification(this.task, this.title, "dialog-information");
                 notification.show();
             }
 
