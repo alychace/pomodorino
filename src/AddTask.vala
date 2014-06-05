@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using Gtk; // For the GUI.
+using Gtk; // For the GUI. 
 
 public class AddTask : Dialog {
     // Dialog window to add tasks.
@@ -28,12 +28,17 @@ public class AddTask : Dialog {
         var content = this.get_content_area() as Box;
         var hbox = new Box(Orientation.HORIZONTAL, 20);
         this.entry = new Entry();
+        this.modal = true;
         
         this.border_width = 5;
         this.title = "Add Task";
         
-        this.add_button(Stock.CLOSE, ResponseType.CLOSE);
-        this.add_button(Stock.ADD, ResponseType.ACCEPT);
+        this.add_button("_Close", ResponseType.CLOSE);
+        var accept_button = add_button("_Add", ResponseType.ACCEPT);
+        this.entry.changed.connect (() => {
+            accept_button.sensitive = (this.entry.text != "");
+        });
+        accept_button.sensitive = false;
         
         content.pack_start(hbox, false, true, 0);
         hbox.pack_start(this.entry);

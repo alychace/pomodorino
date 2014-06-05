@@ -28,18 +28,23 @@ public class Timer : Dialog {
     
     public Timer(string current) {
         this.task = current;
-        this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        try {
+            this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        } catch (Error e) {
+            error ("Error: %s", e.message);
+        }
+        
         // Let's set the interface up.
         Notify.init("Pomodorino");
         var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
-        this.label = new Gtk.Label(current + "\nYou have 25 minutes. Get to work!");
+        this.label = new Gtk.Label(current + "\n" + "You have 25 minutes. Get to work!");
         this.progress_bar = new ProgressBar();
         
         this.border_width = 12;
         this.title = "25 minutes remaining";
         
-        this.add_button(Stock.CANCEL, ResponseType.CANCEL);
+        this.add_button("_Cancel", ResponseType.CANCEL);
         //this.add_button(Stock.ADD, ResponseType.ACCEPT);
         content.pack_start(vbox, false, true, 0);
         vbox.pack_start(label);
@@ -63,26 +68,42 @@ public class Timer : Dialog {
 			double remaining = 25 - (progress * 25);
 			this.title = remaining.to_string() + " minutes remaining";
             this.label.label = this.task + "\n" + this.title + ".";
+            var notification = new Notify.Notification(this.task, this.title, "dialog-information");
 
             if (remaining == 5.0) {
-                var notification = new Notification(this.task, this.title, "dialog-information");
-                notification.show();
+                try {
+                    notification.show();
+                } catch (Error e) {
+                    error ("Error: %s", e.message);
+                }
             }
-            if (remaining == 10.0) {
-                var notification = new Notification(this.task, this.title, "dialog-information");
-                notification.show();
+            else if (remaining == 10.0) {
+                try {
+                    notification.show();
+                } catch (Error e) {
+                    error ("Error: %s", e.message);
+                }
             }
-            if (remaining == 15.0) {
-                var notification = new Notification(this.task, this.title, "dialog-information");
-                notification.show();
+            else if (remaining == 15.0) {
+                try {
+                    notification.show();
+                } catch (Error e) {
+                    error ("Error: %s", e.message);
+                }
             }
-            if (remaining == 20.0) {
-                var notification = new Notification(this.task, this.title, "dialog-information");
-                notification.show();
+            else if (remaining == 20.0) {
+                try {
+                    notification.show();
+                } catch (Error e) {
+                    error ("Error: %s", e.message);
+                }
             }
-            if (remaining == 25.0) {
-                var notification = new Notification(this.task, this.title, "dialog-information");
-                notification.show();
+            else if (remaining == 25.0) {
+                try {
+                    notification.show();
+                } catch (Error e) {
+                    error ("Error: %s", e.message);
+                }
             }
 
 			// Repeat until 100%

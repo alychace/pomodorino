@@ -22,13 +22,17 @@ public class AboutPomodorino : Gtk.AboutDialog { //Granite.Widgets.AboutDialog {
     // Dialog window to add tasks.
     
     public AboutPomodorino() {
-        this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        try {
+            this.logo = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        } catch (Error e) {
+            error ("Error: %s", e.message);
+        }
         this.authors = {"Thomas Chace"};
 		this.program_name = "Pomodorino";
-		this.copyright = "Copyright 2014 Thomas Chace";
-		this.comments = "To do list application with timer implementing aspects of the Pomodoro time management system.";
+		this.copyright = "Copyright © 2014 Thomas Chace";
+		this.comments = "Pomodorino time/todo list manager.";
 		this.version = "0.6";
-		this.license = "All Rights Reserved.";
+		this.license = "GPL";
 		this.website = "http://tchace.info/projects/pomodorino/";
 		this.website_label = "tchace.info/projects/pomodorino/";
 		this.response.connect ((response_id) => {

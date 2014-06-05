@@ -19,6 +19,9 @@
 using Gtk; // For the GUI.
 using Gee; // For fancy and useful things like HashSet.
 using Granite.Widgets;
+using GLib;
+
+const string GETTEXT_PACKAGE = "pomodorino"; 
 
 public class Pomodorino : Window {
     // Main Window
@@ -42,12 +45,18 @@ public class Pomodorino : Window {
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TomatoBase();
         this.dialog = new AddTask(); // Makes a dialog window for adding tasks.
+        this.dialog.title = _("Add Task");
+        this.dialog.set_transient_for(this);
         this.dialog.response.connect(addtask_response);
         
         this.window_position = WindowPosition.CENTER;
         set_default_size(500, 400);
 
-        this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        try {
+            this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+        } catch (Error e) {
+            error ("Error: %s", e.message);
+        }
         
         build_ui(); // For great organisation.
         load();
@@ -96,7 +105,7 @@ public class Pomodorino : Window {
     private void new_task(string name) {
         // Adds a new task to the main window and the configuration.
         this.store.append(out this.iter);
-        this.store.set(this.iter, 0, "TODO", 1, name);
+        this.store.set(this.iter, 0, _("TODO"), 1, name);
     }
     
     private void remove_task() {
@@ -162,7 +171,7 @@ public class Pomodorino : Window {
         
         toolbar.show_close_button = true;
         this.set_titlebar(toolbar);
-        toolbar.title = "Tasks";
+        toolbar.title = _("Tasks");
         toolbar.subtitle = "Pomodorino";
         
         Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
@@ -181,7 +190,7 @@ public class Pomodorino : Window {
         start_button.clicked.connect(start_timer);
         
         var menu = new Gtk.Menu();
-        Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
+        Gtk.MenuItem about = new Gtk.MenuItem.with_label(_("About"));
 		    menu.add(about);
 		    //Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
 		    Gtk.AboutDialog about_dialog = new AboutPomodorino();
@@ -202,8 +211,8 @@ public class Pomodorino : Window {
         this.tree.set_model(this.store);
 
         // Inserts our columns.
-        this.tree.insert_column(get_column ("Status"), -1);
-        this.tree.insert_column(get_column ("Name"), -1);
+        this.tree.insert_column(get_column (_("Status")), -1);
+        this.tree.insert_column(get_column (_("Name")), -1);
 
         // Scrolling is nice.
         var scroll = new ScrolledWindow (null, null);
@@ -234,8 +243,12 @@ public class Pomodorino : Window {
     }
 }
 
-int main (string[] args) {
+void main (string[] args) {
     // Let's start up Gtk.
+    Intl.setlocale(LocaleCategory.MESSAGES, "");
+    Intl.textdomain(GETTEXT_PACKAGE); 
+    Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 
+    Intl.bindtextdomain(GETTEXT_PACKAGE, "./locale"); 
     Gtk.init(ref args);
 
     // Then let's start the main window.
@@ -243,5 +256,4 @@ int main (string[] args) {
     window.show_all();
 
     Gtk.main();
-    return 0;
 }
