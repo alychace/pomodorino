@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pomodorino 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-05 03:21-0400\n"
-"PO-Revision-Date: 2014-06-05 03:21-0400\n"
+"POT-Creation-Date: 2014-06-05 04:02-0400\n"
+"PO-Revision-Date: 2014-06-05 04:02-0400\n"
 "Last-Translator: Thomas Chace <tchacex@gmail.com>\n"
 "Language-Team: Argentinian\n"
 "Language: es_AR\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/PomodorinoWindow.vala:193
 msgid "About"
-msgstr "Acerca"
+msgstr "Acerca de"
 
 #: src/PomodorinoWindow.vala:48
 msgid "Add Task"

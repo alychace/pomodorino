@@ -53,7 +53,7 @@ public class Pomodorino : Window {
         set_default_size(500, 400);
 
         try {
-            this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
             error ("Error: %s", e.message);
         }
@@ -138,7 +138,7 @@ public class Pomodorino : Window {
         if (this.current in this.backend.tasks) {
             timer = new Timer(this.current);
             timer.response.connect ((response_id) => {
-                if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
+                if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
                     this.show_all();
                     timer.destroy();
                 }
@@ -181,6 +181,8 @@ public class Pomodorino : Window {
         
         Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
         var delete_button = new ToolButton(delete_img, null);
+        var delete_style = delete_button.get_style_context ();
+        delete_style.add_class ("destructive-action");
         toolbar.add(delete_button);
         delete_button.clicked.connect(remove_task);
 
@@ -245,6 +247,8 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
+
+    GLib.Environment.set_variable ("GSETTINGS_SCHEMA_DIR", "./schemas/", true);
     Intl.setlocale(LocaleCategory.MESSAGES, "");
     Intl.textdomain(GETTEXT_PACKAGE); 
     Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 

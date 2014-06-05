@@ -1,0 +1,3 @@
+schemas/*.compiled
+locale/es_AR/LC_MESSAGES/pomodorino.mo
+release/
