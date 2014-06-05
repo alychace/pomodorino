@@ -34,13 +34,15 @@ public class Pomodorino : Window {
     private TreeView tree;
     private TomatoBase backend;
     private string current;
+    private string directory;
     
     enum Column {
         STATUS,
         TASK,
     }
     
-    public Pomodorino () {
+    public Pomodorino (string[] args, string directory) {
+        this.directory = directory;
         destroy.connect(quit);
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TomatoBase();
@@ -53,7 +55,7 @@ public class Pomodorino : Window {
         set_default_size(500, 400);
 
         try {
-            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
+            this.icon = new Gdk.Pixbuf.from_file(directory + "/images/logo.png");
         } catch (Error e) {
             error ("Error: %s", e.message);
         }
@@ -196,6 +198,11 @@ public class Pomodorino : Window {
 		    menu.add(about);
 		    //Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
 		    Gtk.AboutDialog about_dialog = new AboutPomodorino();
+            try {
+                about_dialog.logo = new Gdk.Pixbuf.from_file(this.directory + "/images/logo.png");
+            } catch (Error e) {
+            error ("Error: %s", e.message);
+            }
 		    about_dialog.hide();
 		    about.activate.connect (() => {
 			      about_dialog.show();
@@ -247,8 +254,10 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-
-    GLib.Environment.set_variable ("GSETTINGS_SCHEMA_DIR", "./schemas/", true);
+    var path = GLib.Environment.get_current_dir() + "/" + args[0];
+    var file = File.new_for_path(path);
+    var directory = file.get_parent().get_path();
+    GLib.Environment.set_variable ("GSETTINGS_SCHEMA_DIR", directory + "/schemas/", true);
     Intl.setlocale(LocaleCategory.MESSAGES, "");
     Intl.textdomain(GETTEXT_PACKAGE); 
     Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 
@@ -256,7 +265,7 @@ void main (string[] args) {
     Gtk.init(ref args);
 
     // Then let's start the main window.
-    var window = new Pomodorino(); 
+    var window = new Pomodorino(args, directory); 
     window.show_all();
 
     Gtk.main();

@@ -22,11 +22,6 @@ public class AboutPomodorino : Gtk.AboutDialog { //Granite.Widgets.AboutDialog {
     // Dialog window to add tasks.
     
     public AboutPomodorino() {
-        try {
-            this.logo = new Gdk.Pixbuf.from_file("images/logo.png");
-        } catch (Error e) {
-            error ("Error: %s", e.message);
-        }
         this.authors = {"Thomas Chace"};
 		this.program_name = "Pomodorino";
 		this.copyright = "Copyright © 2014 Thomas Chace";
