@@ -63,12 +63,23 @@ public class Pomodorino : Window {
             model.get (iter,
                                    Column.STATUS, out status,
                                    Column.TASK, out task);
-
             this.current = task;
         }
     }
     
     private void quit() {
+        var tasks = new ArrayList<string>();
+        Gtk.TreeModelForeachFunc add_to_tasks = (model, path, iter) => {
+            GLib.Value cell1;
+            GLib.Value cell2;
+
+            this.store.get_value (iter, 0, out cell1);
+            this.store.get_value (iter, 1, out cell2);
+            tasks.add((string) cell2);
+            return false;
+        };
+        this.store.foreach(add_to_tasks);
+        backend.tasks = tasks;
         backend.save();
         Gtk.main_quit();
     }
@@ -119,12 +130,12 @@ public class Pomodorino : Window {
             timer = new Timer(this.current);
             timer.response.connect ((response_id) => {
                 if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
-                    timer.destroy();
                     this.show_all();
+                    timer.destroy();
                 }
             });
-            this.hide();
             timer.show_all();
+            this.hide();
             timer.fill();
         }
         else {
@@ -185,6 +196,7 @@ public class Pomodorino : Window {
         // Then we get the TreeView set up.
         this.tree = new TreeView();
         this.tree.set_rules_hint(true);
+        this.tree.reorderable = true;
         
         this.store = new ListStore(2, typeof(string), typeof(string));
         this.tree.set_model(this.store);
