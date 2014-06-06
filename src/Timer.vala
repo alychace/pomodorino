@@ -29,7 +29,7 @@ public class Timer : Dialog {
     public Timer(string current) {
         this.task = current;
         try {
-            this.icon = new Gdk.Pixbuf.from_file("new-tomato2.png");
+            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
             error ("Error: %s", e.message);
         }
