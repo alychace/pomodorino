@@ -34,11 +34,12 @@ public class AddTask : Dialog {
         this.title = "Add Task";
         
         this.add_button("_Close", ResponseType.CLOSE);
+        this.accept_button.sensitive = false;
         var accept_button = add_button("_Add", ResponseType.ACCEPT);
         this.entry.changed.connect (() => {
+            // Makes sure there is text in the entry.
             accept_button.sensitive = (this.entry.text != "");
         });
-        accept_button.sensitive = false;
         
         content.pack_start(hbox, false, true, 0);
         hbox.pack_start(this.entry);

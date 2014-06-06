@@ -29,11 +29,11 @@ public class Pomodorino : Window {
     int pos = 0;
     private AddTask dialog; // We need a dialog to add new tasks.
     private Timer timer;
-    private TreeIter iter; // Pain in the ass for the TreeView.
+    private TreeIter iter; // Treeview iter
     private ListStore store; // See above.
     private TreeView tree;
     private TomatoBase backend;
-    private string current;
+    private string current; // The currently selected task.
     private string directory;
     
     enum Column {
@@ -43,28 +43,31 @@ public class Pomodorino : Window {
     
     public Pomodorino (string[] args, string directory) {
         this.directory = directory;
-        destroy.connect(quit);
+        destroy.connect(quit); // Close button = app exit.
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
-        this.backend = new TomatoBase();
+        this.backend = new TomatoBase(); // Backend for saving/loading files.
         this.dialog = new AddTask(); // Makes a dialog window for adding tasks.
-        this.dialog.title = _("Add Task");
-        this.dialog.set_transient_for(this);
-        this.dialog.response.connect(addtask_response);
+        this.dialog.title = _("Add Task"); // Set the title here for localisation.
+        this.dialog.set_transient_for(this); // Makes it a modal dialog.
+        this.dialog.response.connect(addtask_response); // Set the dialog's button to respond with our addtask method.
         
-        this.window_position = WindowPosition.CENTER;
+        this.window_position = WindowPosition.CENTER; // Center the window on the screen.
         set_default_size(500, 400);
 
         try {
+            // Load the window icon.
             this.icon = new Gdk.Pixbuf.from_file(directory + "/images/logo.png");
         } catch (Error e) {
+            // If it can't find the logo, the app exits and reports an error.
             error ("Error: %s", e.message);
         }
         
-        build_ui(); // For great organisation.
-        load();
+        build_ui(); // Builds the user interface.
+        load(); // Load tasks.
     }
 
     void on_changed (Gtk.TreeSelection selection) {
+        // Makes sure we know what's currently selected in the Treeview.
         Gtk.TreeModel model;
         Gtk.TreeIter iter;
         string status;
@@ -79,6 +82,7 @@ public class Pomodorino : Window {
     }
     
     private void quit() {
+        // Saves the tasks before quittingt the app.
         var tasks = new ArrayList<string>();
         Gtk.TreeModelForeachFunc add_to_tasks = (model, path, iter) => {
             GLib.Value cell1;
@@ -96,7 +100,7 @@ public class Pomodorino : Window {
     }
     
     private void load() {
-        // Loads tasks and configuration from DConf.
+        // Loads tasks from DConf.
         backend.load();
         var saved_tasks = backend.tasks;
         foreach (string i in saved_tasks) {
@@ -105,13 +109,13 @@ public class Pomodorino : Window {
     }
     
     private void new_task(string name) {
-        // Adds a new task to the main window and the configuration.
+        // Adds a new task to the main window and to the backend.
         this.store.append(out this.iter);
         this.store.set(this.iter, 0, _("TODO"), 1, name);
     }
     
     private void remove_task() {
-        // Deletes a task from the main window and the configuration.
+        // Deletes a task from the Treeview and the configuration.
         backend.remove(this.current);
         this.store.clear();
         var saved_tasks = backend.tasks;
@@ -121,7 +125,7 @@ public class Pomodorino : Window {
     }
     
     private void addtask_response(Dialog source, int response_id) {
-        // This makes sure we can interface with our AddTask() dialog.
+        // Sets up the signals for the AddTask() dialog.
         switch(response_id) {
             case ResponseType.ACCEPT:
                 string text = this.dialog.entry.text;
@@ -137,6 +141,7 @@ public class Pomodorino : Window {
     }
     
     private void start_timer() {
+        // Starts a timer for the current task.
         if (this.current in this.backend.tasks) {
             timer = new Timer(this.current);
             timer.response.connect ((response_id) => {
@@ -147,9 +152,10 @@ public class Pomodorino : Window {
             });
             timer.show_all();
             this.hide();
-            timer.fill();
+            timer.fill(); // Fill the progress bar.
         }
         else {
+            // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
             Gtk.MessageDialog msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "Please select a task to start.");
             msg.response.connect ((response_id) => {
             switch (response_id) {
@@ -166,21 +172,22 @@ public class Pomodorino : Window {
     }
     
     private void build_ui() {
-        // Starts out by setting up the toolbar and toolbuttons.
+        // Starts out by setting up the HeaderBar and buttons.
         //var toolbar = new Toolbar();
-        var toolbar = new HeaderBar();
         //toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
-        
-        toolbar.show_close_button = true;
+        var toolbar = new HeaderBar();
+        toolbar.show_close_button = true; // Makes sure the user has a close button available.
         this.set_titlebar(toolbar);
         toolbar.title = _("Tasks");
         toolbar.subtitle = "Pomodorino";
         
+        // Add a task.
         Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
         ToolButton new_button = new ToolButton (new_img, null);
         toolbar.add(new_button);
         new_button.clicked.connect(this.dialog.show_all);
         
+        // Delete a task.
         Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
         var delete_button = new ToolButton(delete_img, null);
         var delete_style = delete_button.get_style_context ();
@@ -188,11 +195,13 @@ public class Pomodorino : Window {
         toolbar.add(delete_button);
         delete_button.clicked.connect(remove_task);
 
+        // Start a task.
         Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
         var start_button = new ToolButton(start_img, null);
         toolbar.pack_end(start_button);
         start_button.clicked.connect(start_timer);
         
+        // Menu button
         var menu = new Gtk.Menu();
         Gtk.MenuItem about = new Gtk.MenuItem.with_label(_("About"));
 		    menu.add(about);
@@ -208,14 +217,12 @@ public class Pomodorino : Window {
 			      about_dialog.show();
 		});
         var menu_button = new AppMenu(menu);
-
         toolbar.pack_end(menu_button);
         
         // Then we get the TreeView set up.
         this.tree = new TreeView();
         this.tree.set_rules_hint(true);
         this.tree.reorderable = true;
-        
         this.store = new ListStore(2, typeof(string), typeof(string));
         this.tree.set_model(this.store);
 
@@ -234,6 +241,7 @@ public class Pomodorino : Window {
         vbox.pack_start(scroll, true, true, 0);
         add(vbox);
 
+        // Makes sure we know when the selection changes.
         var selection = this.tree.get_selection();
         selection.changed.connect(this.on_changed);
     }
@@ -254,9 +262,12 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-    var path = GLib.Environment.get_current_dir() + "/" + args[0];
-    var file = File.new_for_path(path);
-    var directory = file.get_parent().get_path();
+    var directory = "./";
+    //if (args[0].contains("pomodorino")) {
+    //    var path = GLib.Environment.get_current_dir() + "/" + args[0];
+    //    var file = File.new_for_path(path);
+    //    directory = file.get_parent().get_path();
+    //}
     GLib.Environment.set_variable ("GSETTINGS_SCHEMA_DIR", directory + "/schemas/", true);
     Intl.setlocale(LocaleCategory.MESSAGES, "");
     Intl.textdomain(GETTEXT_PACKAGE); 
