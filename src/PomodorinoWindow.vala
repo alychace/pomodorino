@@ -34,15 +34,13 @@ public class Pomodorino : Window {
     private TreeView tree;
     private TomatoBase backend;
     private string current; // The currently selected task.
-    private string directory;
     
     enum Column {
         STATUS,
         TASK,
     }
     
-    public Pomodorino (string[] args, string directory) {
-        this.directory = directory;
+    public Pomodorino (string[] args) {
         destroy.connect(quit); // Close button = app exit.
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TomatoBase(); // Backend for saving/loading files.
@@ -56,10 +54,10 @@ public class Pomodorino : Window {
 
         try {
             // Load the window icon.
-            this.icon = new Gdk.Pixbuf.from_file(directory + "/images/logo.png");
+            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
             // If it can't find the logo, the app exits and reports an error.
-            error ("Error: %s", e.message);
+            stdout.printf("Error: %s\n", e.message);
         }
         
         build_ui(); // Builds the user interface.
@@ -147,6 +145,7 @@ public class Pomodorino : Window {
             timer.response.connect ((response_id) => {
                 if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
                     this.show_all();
+                    timer.running = false;
                     timer.destroy();
                 }
             });
@@ -208,9 +207,9 @@ public class Pomodorino : Window {
 		    //Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
 		    Gtk.AboutDialog about_dialog = new AboutPomodorino();
             try {
-                about_dialog.logo = new Gdk.Pixbuf.from_file(this.directory + "/images/logo.png");
+                about_dialog.logo = new Gdk.Pixbuf.from_file("images/logo.png");
             } catch (Error e) {
-            error ("Error: %s", e.message);
+                stdout.printf("Error: %s", e.message);
             }
 		    about_dialog.hide();
 		    about.activate.connect (() => {
@@ -262,21 +261,15 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-    var directory = "./";
-    //if (args[0].contains("pomodorino")) {
-    //    var path = GLib.Environment.get_current_dir() + "/" + args[0];
-    //    var file = File.new_for_path(path);
-    //    directory = file.get_parent().get_path();
-    //}
-    GLib.Environment.set_variable ("GSETTINGS_SCHEMA_DIR", directory + "/schemas/", true);
+    GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", "schemas/", true);
     Intl.setlocale(LocaleCategory.MESSAGES, "");
     Intl.textdomain(GETTEXT_PACKAGE); 
     Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 
-    Intl.bindtextdomain(GETTEXT_PACKAGE, "./locale"); 
+    Intl.bindtextdomain(GETTEXT_PACKAGE, "locale"); 
     Gtk.init(ref args);
 
     // Then let's start the main window.
-    var window = new Pomodorino(args, directory); 
+    var window = new Pomodorino(args); 
     window.show_all();
 
     Gtk.main();

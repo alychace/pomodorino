@@ -24,14 +24,15 @@ public class Timer : Dialog {
 
     public ProgressBar progress_bar; // Text box.
     public Label label;
+    public bool running;
     string task;
-    
+
     public Timer(string current) {
         this.task = current;
         try {
             this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
-            error ("Error: %s", e.message);
+            stdout.printf("Error: %s", e.message);
         }
         
         // Let's set the interface up.
@@ -51,11 +52,8 @@ public class Timer : Dialog {
         vbox.pack_start(this.progress_bar);
     }
     
-    public void set_text(string x) {
-        this.progress_bar.set_text(x);
-    }
-    
     public void fill() {
+        this.running = true;
     // Fill the bar:
 		GLib.Timeout.add (30000, () => {
 			// Get the current progress:
@@ -70,42 +68,41 @@ public class Timer : Dialog {
             this.label.label = this.task + "\n" + this.title + ".";
             var notification = new Notify.Notification(this.task, this.title, "dialog-information");
 
-            if (remaining == 5.0) {
+            if (remaining == 5.0 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 10.0) {
+            else if (remaining == 10.0 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 15.0) {
+            else if (remaining == 15.0 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 20.0) {
+            else if (remaining == 20.0 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 25.0) {
+            else if (remaining == 25.0 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-
 			// Repeat until 100%
 			return progress < 1.0;
 		});
