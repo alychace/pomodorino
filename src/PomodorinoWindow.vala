@@ -169,7 +169,6 @@ public class Pomodorino : Window {
     }
 
     private void build_indicator() {
-
         var indicator = new AppIndicator.Indicator("Pomodorino", GLib.Environment.get_current_dir() + "/images/logo.png",
                                       AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 
@@ -177,17 +176,32 @@ public class Pomodorino : Window {
 
         var menu = new Gtk.Menu();
 
+        // Add Timer Button
         var item = new Gtk.MenuItem.with_label("Start Timer");
         item.activate.connect(() => {
-            this.start_timer();
+            indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
+            start_timer();
         });
         item.show();
         menu.append(item);
 
+        item = new Gtk.MenuItem.with_label("Visibility");
+        item.show();
+        item.activate.connect(() => {
+            if (this.visible) {
+                this.hide();
+            } else {
+                this.show_all();
+            }
+
+        });
+        menu.append(item);
+
+        // Add Quit button
         item = new Gtk.MenuItem.with_label("Quit");
         item.show();
         item.activate.connect(() => {
-            this.quit();
+            quit();
         });
         menu.append(item);
 
@@ -287,10 +301,6 @@ public class Pomodorino : Window {
 void main (string[] args) {
     // Let's start up Gtk.
     GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", "schemas/", true);
-    // Intl.setlocale(LocaleCategory.MESSAGES, "");
-    // Intl.textdomain(GETTEXT_PACKAGE); 
-    // Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 
-    // Intl.bindtextdomain(GETTEXT_PACKAGE, "locale"); 
     Gtk.init(ref args);
 
     // Then let's start the main window.
