@@ -1,6 +1,6 @@
 /*
     Todo list application drawing inspiration from the pomodoro technique
-    Copyright (C) 2014  Thomas Chace
+    Copyright (C) 2014 Thomas Chace
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,14 +32,14 @@ public class Timer : Dialog {
         try {
             this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
-            stdout.printf("Error: %s", e.message);
+            stdout.printf("Error: %s\n", e.message);
         }
         
         // Let's set the interface up.
         Notify.init("Pomodorino");
         var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
-        this.label = new Gtk.Label(current + "\n" + "You have 25 minutes. Get to work!");
+        this.label = new Gtk.Label(current + "\n" + "25 minutes remaining");
         this.progress_bar = new ProgressBar();
         
         this.border_width = 12;

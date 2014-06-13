@@ -1,6 +1,6 @@
 /*
     Todo list application drawing inspiration from the pomodoro technique
-    Copyright (C) 2014  Thomas Chace
+    Copyright (C) 2014 Thomas Chace
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -169,8 +169,35 @@ public class Pomodorino : Window {
             msg.show();
         }
     }
+
+    private void build_indicator() {
+
+        var indicator = new AppIndicator.Indicator("Pomodorino", "./images/logo.png",
+                                      AppIndicator.IndicatorCategory.APPLICATION_STATUS);
+
+        indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
+
+        var menu = new Gtk.Menu();
+
+        var item = new Gtk.MenuItem.with_label("Start Timer");
+        item.activate.connect(() => {
+                indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
+        });
+        item.show();
+        menu.append(item);
+
+        item = new Gtk.MenuItem.with_label("Quit");
+        item.show();
+        item.activate.connect(() => {
+                this.quit();
+        });
+        menu.append(item);
+
+        indicator.set_menu(menu);
+    }
     
     private void build_ui() {
+        build_indicator();
         // Starts out by setting up the HeaderBar and buttons.
         //var toolbar = new Toolbar();
         //toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
