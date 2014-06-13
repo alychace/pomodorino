@@ -172,7 +172,7 @@ public class Pomodorino : Window {
 
     private void build_indicator() {
 
-        var indicator = new AppIndicator.Indicator("Pomodorino", "./images/logo.png",
+        var indicator = new AppIndicator.Indicator("Pomodorino", GLib.Environment.get_current_dir() + "/images/logo.png",
                                       AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 
         indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
@@ -181,7 +181,7 @@ public class Pomodorino : Window {
 
         var item = new Gtk.MenuItem.with_label("Start Timer");
         item.activate.connect(() => {
-                indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
+            this.start_timer();
         });
         item.show();
         menu.append(item);
@@ -189,7 +189,7 @@ public class Pomodorino : Window {
         item = new Gtk.MenuItem.with_label("Quit");
         item.show();
         item.activate.connect(() => {
-                this.quit();
+            this.quit();
         });
         menu.append(item);
 
