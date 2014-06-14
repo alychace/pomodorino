@@ -32,6 +32,7 @@ public class Pomodorino : Window {
     private TreeView tree;
     private TomatoBase backend;
     private string current; // The currently selected task.
+    private string pwd;
     
     enum Column {
         STATUS,
@@ -39,6 +40,8 @@ public class Pomodorino : Window {
     }
     
     public Pomodorino (string[] args) {
+        var file = args[0].replace(".", "/");
+        this.pwd = GLib.Environment.get_current_dir() + (file.replace(GLib.Path.get_basename(file), ""));
         destroy.connect(quit); // Close button = app exit.
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TomatoBase(); // Backend for saving/loading files.
@@ -52,7 +55,7 @@ public class Pomodorino : Window {
 
         try {
             // Load the window icon.
-            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
+            this.icon = new Gdk.Pixbuf.from_file(this.pwd + "/images/logo.png");
         } catch (Error e) {
             // If it can't find the logo, the app exits and reports an error.
             stdout.printf("Error: %s\n", e.message);
@@ -169,7 +172,7 @@ public class Pomodorino : Window {
     }
 
     private void build_indicator() {
-        var indicator = new AppIndicator.Indicator("Pomodorino", GLib.Environment.get_current_dir() + "/images/logo.png",
+        var indicator = new AppIndicator.Indicator("Pomodorino", this.pwd + "/images/logo.png",
                                       AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 
         indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
@@ -246,7 +249,7 @@ public class Pomodorino : Window {
 		    //Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
 		    Gtk.AboutDialog about_dialog = new AboutPomodorino();
             try {
-                about_dialog.logo = new Gdk.Pixbuf.from_file("images/logo.png");
+                about_dialog.logo = new Gdk.Pixbuf.from_file(this.pwd + "/images/logo.png");
             } catch (Error e) {
                 stdout.printf("Error: %s", e.message);
             }
@@ -300,7 +303,9 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-    GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", "schemas/", true);
+    var file = args[0].replace(".", "/");
+    var pwd = GLib.Environment.get_current_dir() + (file.replace(GLib.Path.get_basename(file), ""));
+    GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", pwd + "/schemas/", true);
     Gtk.init(ref args);
 
     // Then let's start the main window.
