@@ -28,6 +28,7 @@ public class Timer : Dialog {
     string task;
 
     public Timer(string current) {
+        set_default_size(400, 550);
         this.task = current;
         try {
             this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
@@ -39,7 +40,9 @@ public class Timer : Dialog {
         Notify.init("Pomodorino");
         var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
-        this.label = new Gtk.Label(current + "\n" + "25 minutes remaining");
+        this.label = new Gtk.Label(current + "\n" + "<b>25 minutes</b>");
+        this.label.set_use_markup(true);
+        this.label.set_line_wrap(true);
         this.progress_bar = new ProgressBar();
         
         this.border_width = 12;
@@ -49,12 +52,12 @@ public class Timer : Dialog {
         //this.add_button(Stock.ADD, ResponseType.ACCEPT);
         content.pack_start(vbox, false, true, 0);
         vbox.pack_start(label);
-        vbox.pack_start(this.progress_bar);
+        vbox.pack_end(this.progress_bar);
     }
     
     public void fill() {
         this.running = true;
-    // Fill the bar:
+        // Fill the bar:
 		GLib.Timeout.add (30000, () => {
 			// Get the current progress:
 			// (0.0 -> 0%; 1.0 -> 100%)

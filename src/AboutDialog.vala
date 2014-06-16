@@ -18,7 +18,7 @@
 
 using Gtk; // For the GUI.
 
-public class AboutPomodorino : Gtk.AboutDialog { //Granite.Widgets.AboutDialog {
+public class AboutPomodorino : Granite.Widgets.AboutDialog {
     // Dialog window to add tasks.
     
     public AboutPomodorino() {

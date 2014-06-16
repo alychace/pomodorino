@@ -51,11 +51,11 @@ public class Pomodorino : Window {
         this.dialog.response.connect(addtask_response); // Set the dialog's button to respond with our addtask method.
         
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
-        set_default_size(500, 400);
+        set_default_size(400, 550);
 
         try {
             // Load the window icon.
-            this.icon = new Gdk.Pixbuf.from_file(this.pwd + "/images/logo.png");
+            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
         } catch (Error e) {
             // If it can't find the logo, the app exits and reports an error.
             stdout.printf("Error: %s\n", e.message);
@@ -172,7 +172,7 @@ public class Pomodorino : Window {
     }
 
     private void build_indicator() {
-        var indicator = new AppIndicator.Indicator("Pomodorino", this.pwd + "/images/logo.png",
+        var indicator = new AppIndicator.Indicator("Pomodorino", GLib.Environment.get_current_dir() + "/images/logo.png",
                                       AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 
         indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
@@ -232,7 +232,7 @@ public class Pomodorino : Window {
         Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
         var delete_button = new ToolButton(delete_img, null);
         var delete_style = delete_button.get_style_context ();
-        delete_style.add_class ("destructive-action");
+        delete_style.add_class("destructive-action");
         toolbar.add(delete_button);
         delete_button.clicked.connect(remove_task);
 
@@ -241,21 +241,25 @@ public class Pomodorino : Window {
         var start_button = new ToolButton(start_img, null);
         toolbar.pack_end(start_button);
         start_button.clicked.connect(start_timer);
+
+        var separator = new Gtk.SeparatorToolItem();
+        separator.set_draw (true);
+        toolbar.pack_end(separator);
         
         // Menu button
         var menu = new Gtk.Menu();
         Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
-		    menu.add(about);
-		    //Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
-		    Gtk.AboutDialog about_dialog = new AboutPomodorino();
-            try {
-                about_dialog.logo = new Gdk.Pixbuf.from_file(this.pwd + "/images/logo.png");
-            } catch (Error e) {
-                stdout.printf("Error: %s", e.message);
-            }
-		    about_dialog.hide();
-		    about.activate.connect (() => {
-			      about_dialog.show();
+	    menu.add(about);
+	    Granite.Widgets.AboutDialog about_dialog = new AboutPomodorino();
+	    //Gtk.AboutDialog about_dialog = new AboutPomodorino();
+        try {
+            about_dialog.logo = new Gdk.Pixbuf.from_file("images/logo.png");
+        } catch (Error e) {
+            stdout.printf("Error: %s", e.message);
+        }
+	    about_dialog.hide();
+	    about.activate.connect (() => {
+		      about_dialog.show();
 		});
         var menu_button = new AppMenu(menu);
         toolbar.pack_end(menu_button);
@@ -303,9 +307,7 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-    var file = args[0].replace(".", "/");
-    var pwd = GLib.Environment.get_current_dir() + (file.replace(GLib.Path.get_basename(file), ""));
-    GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", pwd + "/schemas/", true);
+    GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", "schemas/", true);
     Gtk.init(ref args);
 
     // Then let's start the main window.
