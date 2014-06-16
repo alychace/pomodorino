@@ -51,7 +51,7 @@ public class Pomodorino : Window {
         this.dialog.response.connect(addtask_response); // Set the dialog's button to respond with our addtask method.
         
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
-        set_default_size(400, 550);
+        set_default_size(400, 425);
 
         try {
             // Load the window icon.
@@ -143,12 +143,12 @@ public class Pomodorino : Window {
         // Starts a timer for the current task.
         if (this.current in this.backend.tasks) {
             timer = new Timer(this.current);
-            timer.response.connect ((response_id) => {
-                if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
+            timer.destroy.connect(() => {
+               // if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
                     this.show_all();
                     timer.running = false;
                     timer.destroy();
-                }
+                //}
             });
             timer.show_all();
             this.hide();

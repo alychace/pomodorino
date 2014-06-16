@@ -19,7 +19,7 @@
 using Gtk; // For the GUI.
 using Notify;
 
-public class Timer : Dialog {
+public class Timer : Window {
     // Dialog window to add tasks.
 
     public ProgressBar progress_bar; // Text box.
@@ -28,7 +28,7 @@ public class Timer : Dialog {
     string task;
 
     public Timer(string current) {
-        set_default_size(400, 550);
+        set_default_size(400, 425);
         this.task = current;
         try {
             this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
@@ -38,9 +38,8 @@ public class Timer : Dialog {
         
         // Let's set the interface up.
         Notify.init("Pomodorino");
-        var content = this.get_content_area() as Box;
         var vbox = new Box(Orientation.VERTICAL, 20);
-        this.label = new Gtk.Label(current + "\n" + "<b>25 minutes</b>");
+        this.label = new Gtk.Label(current + "\n" + "<span font_desc='59.0'>25</span>");
         this.label.set_use_markup(true);
         this.label.set_line_wrap(true);
         this.progress_bar = new ProgressBar();
@@ -48,9 +47,7 @@ public class Timer : Dialog {
         this.border_width = 12;
         this.title = "25 minutes remaining";
         
-        this.add_button("_Cancel", ResponseType.CANCEL);
-        //this.add_button(Stock.ADD, ResponseType.ACCEPT);
-        content.pack_start(vbox, false, true, 0);
+        this.add(vbox);
         vbox.pack_start(label);
         vbox.pack_end(this.progress_bar);
     }
@@ -58,7 +55,7 @@ public class Timer : Dialog {
     public void fill() {
         this.running = true;
         // Fill the bar:
-		GLib.Timeout.add (30000, () => {
+		GLib.Timeout.add(30000, () => {
 			// Get the current progress:
 			// (0.0 -> 0%; 1.0 -> 100%)
 			double progress = this.progress_bar.get_fraction();
@@ -68,7 +65,7 @@ public class Timer : Dialog {
 			progress_bar.set_fraction(progress);
 			double remaining = 25 - (progress * 25);
 			this.title = remaining.to_string() + " minutes remaining";
-            this.label.label = this.task + "\n" + this.title + ".";
+            this.label.label = this.task + "\n" + "<span font_desc='59.0'>" + remaining.to_string() + "</span>";
             var notification = new Notify.Notification(this.task, this.title, "dialog-information");
 
             if (remaining == 5.0 && this.running == true) {
