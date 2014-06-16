@@ -307,7 +307,6 @@ public class Pomodorino : Window {
 
 void main (string[] args) {
     // Let's start up Gtk.
-    //GLib.Environment.set_variable("GSETTINGS_SCHEMA_DIR", "/opt/pomodorino/schemas/", true);
     Gtk.init(ref args);
 
     // Then let's start the main window.

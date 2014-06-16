@@ -23,29 +23,46 @@ public class TomatoBase : Object {
     // Backend
 
     public ArrayList<string> tasks; // Far superior than string[], more flexible(even with conversion).
-    private GLib.Settings settings; // DConf.
+    private File settings_file;
     
     public TomatoBase () {
         this.tasks = new ArrayList<string>(); // For some reason this magic makes everything work.
-        this.settings = new GLib.Settings("org.thomashc.pomodorino");
-        
+        this.settings_file = File.new_for_path(GLib.Environment.get_variable("HOME") + "/.pomodorino_tasks");
+        if (!this.settings_file.query_exists()) {
+            stderr.printf("File '%s' doesn't exist.\n", this.settings_file.get_path ());
+        } else {
+            //this.settings_file.create();
+        }
     }
     
     public void load() {
-        // Loads tasks and configuration from DConf.
-        var saved_tasks = this.settings.get_strv("tasks");
-        foreach (string i in saved_tasks) {
-            add(i);
+        // Open file for reading and wrap returned FileInputStream into a
+        // DataInputStream, so we can read line by line
+        try {
+            var dis = new DataInputStream (this.settings_file.read());
+            string line;
+            // Read lines until end of file (null) is reached
+            while ((line = dis.read_line(null)) != null) {
+                add(line);
+            } 
+        } catch (Error e) {
+            stderr.printf("%s", e.message);
         }
     }
 
     public void save() {
-        // Converts the HashSet to a string[], then saves it to DConf.
-        string[] saved_tasks = {};
-        foreach (string s in this.tasks) {
-            saved_tasks += s;
+        try {
+            if (this.settings_file.query_exists ()) {
+                this.settings_file.delete();
+            }
+
+            var dos = new DataOutputStream (this.settings_file.create (FileCreateFlags.REPLACE_DESTINATION));
+            foreach (string s in this.tasks) {
+                dos.put_string(s + "\n");
+            }
+        } catch (Error e) {
+            stderr.printf("%s", e.message);
         }
-        this.settings.set_strv("tasks", saved_tasks);
     }
     
     public void add(string name) {
