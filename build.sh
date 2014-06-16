@@ -4,7 +4,7 @@ rm -r release
 mkdir -p release
 mkdir -p release/images
 
-FLAGS="--pkg libnotify --pkg appindicator3-0.1 --pkg gtk+-3.0 --pkg gio-2.0 --pkg gee-1.0 --pkg granite"
+FLAGS="--pkg unity --pkg libnotify --pkg appindicator3-0.1 --pkg gtk+-3.0 --pkg gio-2.0 --pkg gee-1.0 --pkg granite"
 FILES="src/*.vala"
 BINARY="release/pomodorino"
 

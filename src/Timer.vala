@@ -33,7 +33,7 @@ public class Timer : Window {
         this.set_default_size(400, 425);
         this.task = current;
         try {
-            this.icon = new Gdk.Pixbuf.from_file("images/logo.png");
+            this.icon = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
         } catch (Error e) {
             stdout.printf("Error: %s\n", e.message);
         }
@@ -47,7 +47,7 @@ public class Timer : Window {
         this.label.set_line_wrap(true);
         
         //this.border_width = 12;
-        this.title = "1500 seconds remaining";
+        this.title = "25:00";
         
         this.add(vbox);
         vbox.pack_start(task_label);
@@ -57,7 +57,15 @@ public class Timer : Window {
     private string seconds_to_time(int number) {
         var minutes = number / 60;
         var seconds = number % 60;
+        var minutes_string = "";
         var seconds_string = "";
+
+        if (minutes < 10) {
+            minutes_string = "0" + minutes.to_string();
+        } else {
+            minutes_string = minutes.to_string();
+        }
+        
         if (seconds < 10) {
             seconds_string = "0" + seconds.to_string();
         } else {
@@ -68,13 +76,15 @@ public class Timer : Window {
     
     public void fill() {
         this.running = true;
+        var launcher = Unity.LauncherEntry.get_for_desktop_id ("pomodorino.desktop");
+        launcher.count_visible = true;
         // Fill the bar:
 		GLib.Timeout.add(1000, () => {
 
 			// Update the bar:
 			this.progress = this.progress + 1;
 			int remaining = 1500 - this.progress;
-			this.title = this.seconds_to_time(remaining) + " remaining";
+			this.title = this.seconds_to_time(remaining);
             this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
             var notification = new Notify.Notification(this.task, this.title, "dialog-information");
 
@@ -114,6 +124,9 @@ public class Timer : Window {
                 }
             }
 			// Repeat until 100%
+            if (progress == 1500) {
+                launcher.count++;
+            }
 			return progress < 1500;
 		});
     }
