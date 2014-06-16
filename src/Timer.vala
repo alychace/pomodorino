@@ -24,11 +24,11 @@ public class Timer : Window {
 
     public Label label;
     public bool running;
-    public double progress;
+    public int progress;
     string task;
 
     public Timer(string current) {
-        this.progress = 0.0;
+        this.progress = 0;
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
         this.set_default_size(400, 425);
         this.task = current;
@@ -42,59 +42,71 @@ public class Timer : Window {
         Notify.init("Pomodorino");
         var vbox = new Box(Orientation.VERTICAL, 20);
         var task_label = new Gtk.Label(current + "\n");
-        this.label = new Gtk.Label("<span font_desc='60.0'>25</span>");
+        this.label = new Gtk.Label("<span font_desc='60.0'>25:00</span>");
         this.label.set_use_markup(true);
         this.label.set_line_wrap(true);
         
         //this.border_width = 12;
-        this.title = "25 minutes remaining";
+        this.title = "1500 seconds remaining";
         
         this.add(vbox);
         vbox.pack_start(task_label);
         vbox.pack_start(label);
     }
+
+    private string seconds_to_time(int number) {
+        var minutes = number / 60;
+        var seconds = number % 60;
+        var seconds_string = "";
+        if (seconds < 10) {
+            seconds_string = "0" + seconds.to_string();
+        } else {
+            seconds_string = seconds.to_string();
+        }
+        return minutes.to_string() + ":" + seconds_string;
+    }
     
     public void fill() {
         this.running = true;
         // Fill the bar:
-		GLib.Timeout.add(15000, () => {
+		GLib.Timeout.add(1000, () => {
 
 			// Update the bar:
-			this.progress = this.progress + 0.01;
-			double remaining = 25 - (this.progress * 25);
-			this.title = remaining.to_string() + " minutes remaining";
-            this.label.label = "<span font_desc='59.0'>" + remaining.to_string() + "</span>";
+			this.progress = this.progress + 1;
+			int remaining = 1500 - this.progress;
+			this.title = this.seconds_to_time(remaining) + " remaining";
+            this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
             var notification = new Notify.Notification(this.task, this.title, "dialog-information");
 
-            if (remaining == 5.0 && this.running == true) {
+            if (remaining == 300 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 10.0 && this.running == true) {
+            else if (remaining == 600 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 15.0 && this.running == true) {
+            else if (remaining == 900 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 20.0 && this.running == true) {
+            else if (remaining == 1200 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
                     error ("Error: %s", e.message);
                 }
             }
-            else if (remaining == 25.0 && this.running == true) {
+            else if (remaining == 1500 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
@@ -102,7 +114,7 @@ public class Timer : Window {
                 }
             }
 			// Repeat until 100%
-			return progress < 1.0;
+			return progress < 1500;
 		});
     }
 }
