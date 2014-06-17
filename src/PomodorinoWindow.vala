@@ -30,21 +30,17 @@ public class Pomodorino : Window {
     private TreeIter iter; // Treeview iter
     private ListStore store; // See above.
     private TreeView tree;
-    private TomatoBase backend;
+    private TaskStore backend;
     private string current; // The currently selected task.
-    private string pwd;
     
     enum Column {
-        STATUS,
         TASK,
     }
     
     public Pomodorino (string[] args) {
-        var file = args[0].replace(".", "/");
-        this.pwd = GLib.Environment.get_current_dir() + (file.replace(GLib.Path.get_basename(file), ""));
         destroy.connect(quit); // Close button = app exit.
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
-        this.backend = new TomatoBase(); // Backend for saving/loading files.
+        this.backend = new TaskStore(); // Backend for saving/loading files.
         this.dialog = new AddTask(); // Makes a dialog window for adding tasks.
         this.dialog.title = "Add Task"; // Set the title here for localisation.
         this.dialog.set_transient_for(this); // Makes it a modal dialog.
@@ -69,27 +65,23 @@ public class Pomodorino : Window {
         // Makes sure we know what's currently selected in the Treeview.
         Gtk.TreeModel model;
         Gtk.TreeIter iter;
-        string status;
         string task;
 
         if (selection.get_selected (out model, out iter)) {
             model.get (iter,
-                                   Column.STATUS, out status,
                                    Column.TASK, out task);
             this.current = task;
         }
     }
     
     private void quit() {
-        // Saves the tasks before quittingt the app.
+        // Saves the tasks before quitting the app.
         var tasks = new ArrayList<string>();
         Gtk.TreeModelForeachFunc add_to_tasks = (model, path, iter) => {
-            GLib.Value cell1;
-            GLib.Value cell2;
+            GLib.Value cell;
 
-            this.store.get_value (iter, 0, out cell1);
-            this.store.get_value (iter, 1, out cell2);
-            tasks.add((string) cell2);
+            this.store.get_value (iter, 0, out cell);
+            tasks.add((string) cell);
             return false;
         };
         this.store.foreach(add_to_tasks);
@@ -110,7 +102,7 @@ public class Pomodorino : Window {
     private void new_task(string name) {
         // Adds a new task to the main window and to the backend.
         this.store.append(out this.iter);
-        this.store.set(this.iter, 0, "TODO", 1, name);
+        this.store.set(this.iter, 0, name);
     }
     
     private void remove_task() {
@@ -152,7 +144,7 @@ public class Pomodorino : Window {
             });
             timer.show_all();
             this.hide();
-            timer.fill(); // Fill the progress bar.
+            timer.start(); // Fill the progress bar.
         }
         else {
             // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
@@ -243,7 +235,7 @@ public class Pomodorino : Window {
         start_button.clicked.connect(start_timer);
 
         var separator = new Gtk.SeparatorToolItem();
-        separator.set_draw (true);
+        separator.set_draw(true);
         toolbar.pack_end(separator);
         
         // Menu button
@@ -268,12 +260,11 @@ public class Pomodorino : Window {
         this.tree = new TreeView();
         this.tree.set_rules_hint(true);
         this.tree.reorderable = true;
-        this.store = new ListStore(2, typeof(string), typeof(string));
+        this.store = new ListStore(1, typeof(string));
         this.tree.set_model(this.store);
 
         // Inserts our columns.
-        this.tree.insert_column(get_column ("Status"), -1);
-        this.tree.insert_column(get_column ("Name"), -1);
+        this.tree.insert_column(get_column("Name"), -1);
 
         // Scrolling is nice.
         var scroll = new ScrolledWindow (null, null);
@@ -293,11 +284,11 @@ public class Pomodorino : Window {
     
     TreeViewColumn get_column (string title) {
         // This pain in the ass lets us add text to TreeView entries.
-        var col = new TreeViewColumn ();
+        var col = new TreeViewColumn();
         col.title = title;
         col.sort_column_id = this.pos;
 
-        var crt = new CellRendererText ();
+        var crt = new CellRendererText();
         col.pack_start (crt, false);
         col.add_attribute (crt, "text", this.pos++);
 

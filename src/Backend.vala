@@ -19,13 +19,13 @@
 using Gee; // For fancy and useful things like HashSet.
 using Gtk;
 
-public class TomatoBase : Object {
+public class TaskStore : Object {
     // Backend
 
     public ArrayList<string> tasks; // Far superior than string[], more flexible(even with conversion).
     private File settings_file;
     
-    public TomatoBase () {
+    public TaskStore () {
         this.tasks = new ArrayList<string>(); // For some reason this magic makes everything work.
         this.settings_file = File.new_for_path(GLib.Environment.get_variable("HOME") + "/.pomodorino_tasks");
         if (!this.settings_file.query_exists()) {
