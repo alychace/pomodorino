@@ -73,8 +73,8 @@ public class Pomodorino : Window {
             this.current = task;
         }
     }
-    
-    private void quit() {
+
+    private void save() {
         // Saves the tasks before quitting the app.
         var tasks = new ArrayList<string>();
         Gtk.TreeModelForeachFunc add_to_tasks = (model, path, iter) => {
@@ -87,6 +87,10 @@ public class Pomodorino : Window {
         this.store.foreach(add_to_tasks);
         backend.tasks = tasks;
         backend.save();
+    }
+    
+    private void quit() {
+        save();
         Gtk.main_quit();
     }
     
@@ -130,10 +134,7 @@ public class Pomodorino : Window {
                 break;
         }
     }
-    
-    private void start_timer() {
-        // Starts a timer for the current task.
-        if (this.current in this.backend.tasks) {
+        foreach (this.current in this.backend.tasks) {
             timer = new Timer(this.current);
             timer.destroy.connect(() => {
                // if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
@@ -144,9 +145,43 @@ public class Pomodorino : Window {
             });
             timer.show_all();
             this.hide();
+
             timer.start(); // Fill the progress bar.
         }
         else {
+            // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
+            Gtk.MessageDialog msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "Please select a task to start.");
+            msg.response.connect ((response_id) => {
+            switch (response_id) {
+                case Gtk.ResponseType.OK:
+                    msg.destroy();
+                    break;
+                case Gtk.ResponseType.DELETE_EVENT:
+                    msg.destroy();
+                    break;
+            }
+            });
+            msg.show();
+        }
+    
+    private void start_timer() {
+        save();
+        if (this.current in this.backend.tasks) {
+            timer = new Timer();
+            timer.destroy.connect(() => {
+               // if (response_id == ResponseType.CANCEL || response_id == ResponseType.DELETE_EVENT || response_id == ResponseType.CLOSE) {
+                this.show_all();
+                timer.running = false;
+                timer.destroy();
+                //}
+            });
+            this.hide();
+            
+            // Starts a timer for the current task.
+            timer.task = this.current;
+            timer.show_all();
+            timer.start();
+        } else {
             // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
             Gtk.MessageDialog msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "Please select a task to start.");
             msg.response.connect ((response_id) => {

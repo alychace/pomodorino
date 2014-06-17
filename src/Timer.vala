@@ -27,14 +27,14 @@ public class Timer : Window {
     public int progress;
     private PostTaskDialog dialog;
     private HeaderBar toolbar;
-    string task;
+    public string task;
 
-    public Timer(string current) {
+    public Timer() {
         this.dialog = new PostTaskDialog();
         this.progress = 0;
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
         this.set_default_size(400, 425);
-        this.task = current;
+        this.task;
         try {
             this.icon = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
         } catch (Error e) {
@@ -125,7 +125,6 @@ public class Timer : Window {
         launcher.count_visible = true;
         // Fill the bar:
 		GLib.Timeout.add(1000, () => {
-
 			// Update the bar:
 			this.progress = this.progress + 1;
 			int remaining = 1500 - this.progress;
@@ -134,35 +133,7 @@ public class Timer : Window {
             this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
             var notification = new Notify.Notification(this.task, this.seconds_to_time(remaining), "dialog-information");
 
-            if (remaining == 300 && this.running == true) {
-                try {
-                    notification.show();
-                } catch (Error e) {
-                    error ("Error: %s", e.message);
-                }
-            }
-            else if (remaining == 600 && this.running == true) {
-                try {
-                    notification.show();
-                } catch (Error e) {
-                    error ("Error: %s", e.message);
-                }
-            }
-            else if (remaining == 900 && this.running == true) {
-                try {
-                    notification.show();
-                } catch (Error e) {
-                    error ("Error: %s", e.message);
-                }
-            }
-            else if (remaining == 1200 && this.running == true) {
-                try {
-                    notification.show();
-                } catch (Error e) {
-                    error ("Error: %s", e.message);
-                }
-            }
-            else if (remaining == 1500 && this.running == true) {
+            if (remaining == 300 || remaining == 600 || remaining == 900 || remaining == 1200 || remaining == 1500 && this.running == true) {
                 try {
                     notification.show();
                 } catch (Error e) {
@@ -179,6 +150,7 @@ public class Timer : Window {
 			return progress < 1500;
 		});
     }
+
     private void post_task_response(Dialog source, int response_id) {
         // Sets up the signals for the AddTask() dialog.
         switch(response_id) {
@@ -188,6 +160,7 @@ public class Timer : Window {
                 break;
             case ResponseType.CLOSE:
                 this.dialog.hide(); // Saves it for later use.
+                this.destroy();
                 break;
         }
     }
