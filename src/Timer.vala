@@ -34,7 +34,6 @@ public class Timer : Window {
         this.progress = 0;
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
         this.set_default_size(400, 425);
-        this.task;
         try {
             this.icon = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
         } catch (Error e) {
