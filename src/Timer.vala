@@ -84,6 +84,7 @@ public class Timer : Window {
     }
 
     public void short_break() {
+        this.progress = 0;
         this.running = true;
         var launcher = Unity.LauncherEntry.get_for_desktop_id("pomodorino.desktop");
         launcher.count_visible = true;
@@ -119,6 +120,7 @@ public class Timer : Window {
     }
     
     public void start() {
+        this.progress = 0;
         this.running = true;
         var launcher = Unity.LauncherEntry.get_for_desktop_id("pomodorino.desktop");
         launcher.count_visible = true;
