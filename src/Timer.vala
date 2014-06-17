@@ -25,10 +25,12 @@ public class Timer : Window {
     public Label label;
     public bool running;
     public int progress;
+    private PostTaskDialog dialog;
     private HeaderBar toolbar;
     string task;
 
     public Timer(string current) {
+        this.dialog = new PostTaskDialog();
         this.progress = 0;
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
         this.set_default_size(400, 425);
@@ -86,8 +88,6 @@ public class Timer : Window {
     public void short_break() {
         this.progress = 0;
         this.running = true;
-        var launcher = Unity.LauncherEntry.get_for_desktop_id("pomodorino.desktop");
-        launcher.count_visible = true;
         // Fill the bar:
         GLib.Timeout.add(1000, () => {
 
@@ -97,10 +97,9 @@ public class Timer : Window {
             toolbar.title = "Pomodorino - " + this.seconds_to_time(remaining);
             toolbar.subtitle = "Short Break";
             this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
-            var notification = new Notify.Notification(this.task, this.seconds_to_time(remaining), "dialog-information");
 
             // Repeat until 100%
-            if (progress == 300) {
+            if (remaining == 0) {
                 // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
                 Gtk.MessageDialog msg = new Gtk.MessageDialog(this, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.OK, "Break complete.");
                 msg.response.connect ((response_id) => {
@@ -115,7 +114,7 @@ public class Timer : Window {
                 });
                 msg.show();
             }
-            return progress < 1500;
+            return progress < 300;
         }); 
     }
     
@@ -171,24 +170,26 @@ public class Timer : Window {
                 }
             }
 			// Repeat until 100%
-            if (progress == 1500) {
+            if (remaining == 0) {
                 launcher.count++;
                 // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
-                Gtk.MessageDialog msg = new Gtk.MessageDialog(this, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.OK, "Task complete.");
-                msg.response.connect ((response_id) => {
-                switch (response_id) {
-                    case Gtk.ResponseType.OK:
-                        msg.destroy();
-                        short_break();
-                        break;
-                    case Gtk.ResponseType.DELETE_EVENT:
-                        msg.destroy();
-                        break;
-                }
-                });
-                msg.show();
+                this.dialog.show_all();
+                this.dialog.response.connect(post_task_response);
             }
 			return progress < 1500;
 		});
     }
+    private void post_task_response(Dialog source, int response_id) {
+        // Sets up the signals for the AddTask() dialog.
+        switch(response_id) {
+            case ResponseType.ACCEPT:
+                short_break();
+                this.dialog.hide();
+                break;
+            case ResponseType.CLOSE:
+                this.dialog.hide(); // Saves it for later use.
+                break;
+        }
+    }
+    
 }
