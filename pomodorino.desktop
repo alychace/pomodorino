@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Pomodorino
+GenericName=Time Manager and To-do Lists
+Comment=Use the pomodoro technique to manage your time.
+Exec=/opt/pomodorino/pomodorino
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=/opt/pomodorino/images/logo.png
+Categories=GNOME;GTK;Utility;
