@@ -179,28 +179,30 @@ public class Pomodorino : Window {
         var menu = new Gtk.Menu();
 
         // Add Timer Button
-        var item = new Gtk.MenuItem.with_label("Start Timer");
-        item.activate.connect(() => {
+        var timer_item = new Gtk.MenuItem.with_label("Start Timer");
+        timer_item.activate.connect(() => {
             indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
             start_timer();
         });
-        item.show();
-        menu.append(item);
+        timer_item.show();
+        menu.append(timer_item);
 
-        item = new Gtk.MenuItem.with_label("Visibility");
-        item.show();
-        item.activate.connect(() => {
+        var show_item = new Gtk.MenuItem.with_label("Hide");
+        show_item.show();
+        show_item.activate.connect(() => {
             if (this.visible) {
+                show_item.label = "Show";
                 this.hide();
             } else {
                 this.show_all();
+                show_item.label = "Hide";
             }
 
         });
-        menu.append(item);
+        menu.append(show_item);
 
         // Add Quit button
-        item = new Gtk.MenuItem.with_label("Quit");
+        var item = new Gtk.MenuItem.with_label("Quit");
         item.show();
         item.activate.connect(() => {
             quit();
@@ -213,15 +215,15 @@ public class Pomodorino : Window {
     private void build_ui() {
         build_indicator();
         // Starts out by setting up the HeaderBar and buttons.
-        var toolbar = new Toolbar();
-        toolbar.orientation = Gtk.Orientation.HORIZONTAL;
-        toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
+        //var toolbar = new Toolbar();
+        //toolbar.orientation = Gtk.Orientation.HORIZONTAL;
+        //toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
         this.title = "Pomodorino - Tasks";
-        //var toolbar = new HeaderBar();
-        //toolbar.show_close_button = true; // Makes sure the user has a close button available.
-        //this.set_titlebar(toolbar);
-        //toolbar.title = "Tasks";
-        //toolbar.subtitle = "Pomodorino";
+        var toolbar = new HeaderBar();
+        toolbar.show_close_button = true; // Makes sure the user has a close button available.
+        this.set_titlebar(toolbar);
+        toolbar.title = "Tasks";
+        toolbar.subtitle = "Pomodorino";
 
         // Add a task.
         Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
@@ -240,15 +242,17 @@ public class Pomodorino : Window {
         var separator = new Gtk.SeparatorToolItem();
         //var separator = new Separator(Gtk.Orientation.HORIZONTAL);
         
-        separator.draw = false;
+        separator.draw = true;
         separator.expand = true;
-        toolbar.add(separator);
+        //toolbar.pack_end(separator);
 
         // Start a task.
         Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
         var start_button = new ToolButton(start_img, null);
-        toolbar.add(start_button);
+        toolbar.pack_end(start_button);
         start_button.clicked.connect(start_timer);
+
+        toolbar.pack_end(separator);
 
         // Menu button
         var menu = new Gtk.Menu();
@@ -266,7 +270,7 @@ public class Pomodorino : Window {
 		      about_dialog.show();
 		});
         var menu_button = new AppMenu(menu);
-        toolbar.add(menu_button);
+        toolbar.pack_end(menu_button);
         
         // Then we get the TreeView set up.
         this.tree = new TreeView();
