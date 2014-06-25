@@ -35,10 +35,12 @@ public class Pomodorino : Window {
     
     enum Column {
         TASK,
+        DATE,
+        PRIORITY,
     }
     
     public Pomodorino (string[] args) {
-        this.current = "";
+        this.current = "::";
         destroy.connect(quit); // Close button = app exit.
         //Gtk.Settings.get_default().set("gtk-application-prefer-dark-theme", true);
         this.backend = new TaskStore(); // Backend for saving/loading files.
@@ -48,7 +50,7 @@ public class Pomodorino : Window {
         this.dialog.response.connect(addtask_response); // Set the dialog's button to respond with our addtask method.
         
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
-        set_default_size(400, 425);
+        set_default_size(425, 450);
 
         try {
             // Load the window icon.
@@ -67,11 +69,15 @@ public class Pomodorino : Window {
         Gtk.TreeModel model;
         Gtk.TreeIter iter;
         string task;
+        string date;
+        string priority;
 
         if (selection.get_selected (out model, out iter)) {
             model.get (iter,
-                                   Column.TASK, out task);
-            this.current = task;
+                            Column.TASK, out task,
+                            Column.DATE, out date,
+                            Column.PRIORITY, out priority);
+            this.current = task + ":" + date + ":" + priority;
         }
     }
 
@@ -79,10 +85,14 @@ public class Pomodorino : Window {
         // Saves the tasks before quitting the app.
         var tasks = new ArrayList<string>();
         Gtk.TreeModelForeachFunc add_to_tasks = (model, path, iter) => {
-            GLib.Value cell;
+            GLib.Value name;
+            GLib.Value date;
+            GLib.Value priority;
 
-            this.store.get_value (iter, 0, out cell);
-            tasks.add((string) cell);
+            this.store.get_value(iter, 0, out date);
+            this.store.get_value(iter, 1, out name);
+            this.store.get_value(iter, 2, out priority);
+            tasks.add((string) name + ":" + (string) date + ":" + (string) priority);
             return false;
         };
         this.store.foreach(add_to_tasks);
@@ -104,15 +114,21 @@ public class Pomodorino : Window {
         }
     }
     
-    private void new_task(string name) {
+    private void new_task(string task) {
+        string[] task_data = task.split(":");
+        
+        var name = task_data[0];
+        var date = task_data[1];
+        var priority = task_data[2];
         // Adds a new task to the main window and to the backend.
         this.store.append(out this.iter);
-        this.store.set(this.iter, 0, name);
+        this.store.set(this.iter, 0, date, 1, name, 2, priority);
     }
     
     private void remove_task() {
         // Deletes a task from the Treeview and the configuration.
-        backend.remove(this.current);
+        this.backend.remove(this.current);
+        stdout.printf(this.current);
         this.store.clear();
         var saved_tasks = backend.tasks;
         foreach (string i in saved_tasks) {
@@ -276,11 +292,13 @@ public class Pomodorino : Window {
         this.tree = new TreeView();
         this.tree.set_rules_hint(true);
         this.tree.reorderable = true;
-        this.store = new ListStore(1, typeof(string));
+        this.store = new ListStore(3, typeof(string), typeof(string), typeof(string));
         this.tree.set_model(this.store);
 
         // Inserts our columns.
+        this.tree.insert_column(get_column("Date"), -1);
         this.tree.insert_column(get_column("Name"), -1);
+        this.tree.insert_column(get_column("Priority"), -1);
 
         // Scrolling is nice.
         var scroll = new ScrolledWindow (null, null);
@@ -305,8 +323,8 @@ public class Pomodorino : Window {
         col.sort_column_id = this.pos;
 
         var crt = new CellRendererText();
-        col.pack_start (crt, false);
-        col.add_attribute (crt, "text", this.pos++);
+        col.pack_start(crt, false);
+        col.add_attribute(crt, "text", this.pos++);
 
         return col;
     }
