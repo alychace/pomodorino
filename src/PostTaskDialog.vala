@@ -33,7 +33,7 @@ public class PostTaskDialog : Dialog {
         this.border_width = 5;
         this.title = "Now What?";
         
-        this.add_button("_Next Task", ResponseType.CLOSE);
+        this.add_button("_New Task", ResponseType.CLOSE);
         
         this.add_button("_Break", ResponseType.ACCEPT);
         
