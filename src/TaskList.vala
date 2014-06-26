@@ -35,8 +35,8 @@ public class TaskList : Window {
     
     enum Column {
         PRIORITY,
-        DATE,
         TASK,
+        DATE,
     }
     
     public TaskList() {
@@ -48,7 +48,7 @@ public class TaskList : Window {
         this.dialog.set_transient_for(this); // Makes it a modal dialog.
         
         this.window_position = WindowPosition.CENTER; // Center the window on the screen.
-        set_default_size(500, 525);
+        set_default_size(300, 325);
 
         try {
             // Load the window icon.

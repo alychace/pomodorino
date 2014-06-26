@@ -29,7 +29,12 @@ public class TaskStore : Object {
         this.tasks = new ArrayList<string>(); // For some reason this magic makes everything work.
         this.settings_file = File.new_for_path(GLib.Environment.get_variable("HOME") + "/.pomodorino_tasks");
         if (!this.settings_file.query_exists()) {
-            stderr.printf("File '%s' doesn't exist.\n", this.settings_file.get_path ());
+            stderr.printf("File '%s' doesn't exist.\n", this.settings_file.get_path());
+            var now = new DateTime.now_local();
+            var day = now.get_day_of_month();
+            var month = now.get_month();
+            var year = now.get_year();
+            this.tasks.add("Example Task 1||1||" + day.to_string() + "/" + month.to_string() + "/" + year.to_string());
         } else {
             //this.settings_file.create();
         }

@@ -61,7 +61,7 @@ public class Pomodorino {
 
         Gtk.MenuBar bar = new Gtk.MenuBar();
         //window.add(bar);
-        Gtk.MenuItem item_file = new Gtk.MenuItem.with_label("File");
+        Gtk.MenuItem item_file = new Gtk.MenuItem.with_label("Tasks");
         bar.add(item_file);
         Gtk.Menu filemenu = new Gtk.Menu ();
         item_file.set_submenu(filemenu);
@@ -73,6 +73,18 @@ public class Pomodorino {
         Gtk.MenuItem item_delete = new Gtk.MenuItem.with_label("Delete");
         filemenu.add(item_delete);
         item_delete.activate.connect(remove_task);
+
+        filemenu.add(new Gtk.SeparatorMenuItem());
+
+        Gtk.MenuItem item_timer = new Gtk.MenuItem.with_label("Start Timer");
+        filemenu.add(item_timer);
+        item_timer.activate.connect(start_timer);
+
+        filemenu.add(new Gtk.SeparatorMenuItem());
+
+        Gtk.MenuItem item_quit = new Gtk.MenuItem.with_label("Quit");
+        filemenu.add(item_quit);
+        item_quit.activate.connect(quit);
 
         Gtk.MenuItem item_help = new Gtk.MenuItem.with_label("Help");
         bar.add(item_help);
