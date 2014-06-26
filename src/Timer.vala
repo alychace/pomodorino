@@ -19,21 +19,21 @@
 using Gtk; // For the GUI.
 using Notify;
 
-public class Timer : Window {
+public class Timer : Dialog {
     // Dialog window to add tasks.
 
     public Label label;
     public bool running;
     public int progress;
     private PostTaskDialog dialog;
-    private HeaderBar toolbar;
     public string task;
 
     public Timer() {
         this.dialog = new PostTaskDialog();
+        this.modal = true;
         this.progress = 0;
-        this.window_position = WindowPosition.CENTER; // Center the window on the screen.
-        this.set_default_size(400, 425);
+        this.set_default_size(300, 325);
+        this.title = "Pomodorino - 25:00";
         try {
             this.icon = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
         } catch (Error e) {
@@ -43,25 +43,43 @@ public class Timer : Window {
         // Let's set the interface up.
         Notify.init("Pomodorino");
         build_ui();
+        this.destroy.connect(quit);
+    }
+
+    private void quit() {
+        this.running = false;
+        destroy();
+    }
+
+    public void responses(Dialog source, int response_id) {
+        // Sets up the signals for the AddTask() dialog.
+        switch(response_id) {
+            case ResponseType.CLOSE:
+                quit();
+                break;
+        }
     }
 
     private void build_ui() {
-        toolbar = new HeaderBar();
-        toolbar.show_close_button = true; // Makes sure the user has a close button available.
-        this.set_titlebar(toolbar);
-        toolbar.title = "Pomodorino";
+        var content = this.get_content_area() as Box;
 
         var vbox = new Box(Orientation.VERTICAL, 20);
         this.label = new Gtk.Label("<span font_desc='60.0'>25:00</span>");
         this.label.set_use_markup(true);
         this.label.set_line_wrap(true);
         
-        //this.border_width = 12;
-        toolbar.title = "Pomodorino - 25:00";
+        this.border_width = 12;
+        //toolbar.title = "Pomodorino - 25:00";
         
-        this.add(vbox);
+        //this.add(vbox);
+        this.add_button("_Close", ResponseType.CLOSE);
+
         
         vbox.pack_start(label);
+        content.pack_start(vbox, false, true, 0);
+        this.response.connect(responses); // Set the dialog's button to respond with our addtask method.
+
+
     }
 
     private string seconds_to_time(int number) {
@@ -93,8 +111,7 @@ public class Timer : Window {
             // Update the bar:
             this.progress = this.progress + 1;
             int remaining = 300 - this.progress;
-            toolbar.title = "Pomodorino - " + this.seconds_to_time(remaining);
-            toolbar.subtitle = "Short Break";
+            this.title = "Pomodorino - " + this.seconds_to_time(remaining);
             this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
 
             // Repeat until 100%
@@ -127,8 +144,7 @@ public class Timer : Window {
 			// Update the bar:
 			this.progress = this.progress + 1;
 			int remaining = 1500 - this.progress;
-			toolbar.title = "Pomodorino - " + this.seconds_to_time(remaining);
-            toolbar.subtitle = this.task;
+			this.title = "Pomodorino - " + this.seconds_to_time(remaining);
             this.label.label = "<span font_desc='60.0'>" + this.seconds_to_time(remaining) + "</span>";
             var notification = new Notify.Notification(this.task, this.seconds_to_time(remaining), "dialog-information");
 

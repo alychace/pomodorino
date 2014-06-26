@@ -21,14 +21,35 @@ using Gtk; // For the GUI.
 public class AddTask : Dialog {
     // Dialog window to add tasks.
 
-    public Entry entry; // Text box.
-    
+    public Entry name_entry; // Text box.
+    public Entry date_entry;
+    public Entry priority_entry;
+
     public AddTask() {
         // Let's set the interface up.
         var content = this.get_content_area() as Box;
-        var hbox = new Box(Orientation.HORIZONTAL, 20);
-        this.entry = new Entry();
         this.modal = true;
+
+        var hbox = new Box(Orientation.HORIZONTAL, 20);
+        var label = new Gtk.Label("Priority:    ");
+        priority_entry = new Entry();
+        content.pack_start(hbox, false, true, 0);
+        hbox.pack_start(label);
+        hbox.pack_start(priority_entry);
+
+        hbox = new Box(Orientation.HORIZONTAL, 20);
+        label = new Gtk.Label("Date:    ");
+        date_entry = new Entry();
+        content.pack_start(hbox, false, true, 0);
+        hbox.pack_start(label);
+        hbox.pack_start(date_entry);        
+        
+        hbox = new Box(Orientation.HORIZONTAL, 20);
+        label = new Gtk.Label("Name:    ");
+        name_entry = new Entry();
+        content.pack_start(hbox, false, true, 0);
+        hbox.pack_start(label);
+        hbox.pack_start(name_entry);
         
         this.border_width = 5;
         this.title = "Add Task";
@@ -37,12 +58,11 @@ public class AddTask : Dialog {
         
         var accept_button = add_button("_Add", ResponseType.ACCEPT);
         accept_button.sensitive = false;
-        this.entry.changed.connect (() => {
+        name_entry.changed.connect (() => {
             // Makes sure there is text in the entry.
-            accept_button.sensitive = (this.entry.text != "");
+            accept_button.sensitive = (name_entry.text != "");
         });
         
-        content.pack_start(hbox, false, true, 0);
-        hbox.pack_start(this.entry);
+        
     }
 }
