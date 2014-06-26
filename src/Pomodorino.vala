@@ -152,7 +152,8 @@ public class Pomodorino {
     private void load() {
         // Loads tasks from DConf.
         this.backend.load();
-        foreach (string task in this.backend.tasks) {
+        var saved_tasks = backend.tasks;
+        foreach (string task in saved_tasks) {
             window.new_task(task);
         }
     }
@@ -179,8 +180,11 @@ public class Pomodorino {
     private void remove_task() {
         // Deletes a task from the Treeview and the configuration.
         this.backend.remove(window.current);
-        window.remove_task();
-        load();
+        window.store.clear();
+        var saved_tasks = backend.tasks;
+        foreach (string i in saved_tasks) {
+            window.new_task(i);
+        }
     }
 
     private void quit() {

@@ -87,11 +87,6 @@ public class TaskList : Window {
         this.store.set(this.iter, 0, priority, 1, date, 2, name);
     }
     
-    public void remove_task() {
-        // Deletes a task from the Treeview and the configuration.
-        this.store.clear();
-    }
-    
     public void build_ui() {
         // Starts out by setting up the HeaderBar and buttons.
         toolbar = new HeaderBar();
