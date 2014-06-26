@@ -30,7 +30,7 @@ public class TaskList : Window {
     public TreeIter iter; // Treeview iter
     public ListStore store; // See above.
     public TreeView tree;
-    public HeaderBar toolbar;
+    public Toolbar toolbar;
     public string current; // The currently selected task.
     
     enum Column {
@@ -70,8 +70,8 @@ public class TaskList : Window {
         if (selection.get_selected (out model, out iter)) {
             model.get (iter,
                             Column.PRIORITY, out priority,
-                            Column.DATE, out date,
-                            Column.TASK, out task);
+                            Column.TASK, out task,
+                            Column.DATE, out date);
             this.current = task + "||" + priority + "||" + date;
         }
     }
@@ -84,19 +84,20 @@ public class TaskList : Window {
         var priority = task_data[1];
         // Adds a new task to the main window and to the backend.
         this.store.append(out this.iter);
-        this.store.set(this.iter, 0, priority, 1, date, 2, name);
+        this.store.set(this.iter, 0, priority, 1, name, 2, date);
     }
     
     public void build_ui() {
         // Starts out by setting up the HeaderBar and buttons.
-        toolbar = new HeaderBar();
-        //toolbar.orientation = Gtk.Orientation.HORIZONTAL;
-        //toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
+        //toolbar = new HeaderBar();
+        toolbar = new Toolbar();
+        toolbar.orientation = Gtk.Orientation.HORIZONTAL;
+        toolbar.get_style_context().add_class(STYLE_CLASS_PRIMARY_TOOLBAR);
         this.title = "Pomodorino - Tasks";
-        toolbar.show_close_button = true; // Makes sure the user has a close button available.
-        this.set_titlebar(toolbar);
-        toolbar.title = "Tasks";
-        toolbar.subtitle = "Pomodorino";
+        //toolbar.show_close_button = true; // Makes sure the user has a close button available.
+        //this.set_titlebar(toolbar);
+        //toolbar.title = "Tasks";
+        //toolbar.subtitle = "Pomodorino";
         
         // Then we get the TreeView set up.
         this.tree = new TreeView();
@@ -106,9 +107,9 @@ public class TaskList : Window {
         this.tree.set_model(this.store);
 
         // Inserts our columns.
-        this.tree.insert_column(get_column("Priority"), -1);
-        this.tree.insert_column(get_column("Date"), -1);
+        this.tree.insert_column(get_column(""), -1);
         this.tree.insert_column(get_column("Name"), -1);
+        this.tree.insert_column(get_column("Due"), -1);
 
         // Makes sure we know when the selection changes.
         var selection = this.tree.get_selection();

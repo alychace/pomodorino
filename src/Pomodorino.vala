@@ -59,37 +59,30 @@ public class Pomodorino {
     private void build_ui() {
         window.build_ui();
 
-        // Add a task.
-        Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
-        ToolButton new_button = new ToolButton (new_img, null);
-        window.toolbar.pack_start(new_button);
-        new_button.clicked.connect(window.dialog.show_all);
-        
-        // Delete a task.
-        Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
-        var delete_button = new ToolButton(delete_img, null);
-        var delete_style = delete_button.get_style_context ();
-        delete_style.add_class("destructive-action");
-        window.toolbar.pack_start(delete_button);
-        delete_button.clicked.connect(remove_task);
+        Gtk.MenuBar bar = new Gtk.MenuBar();
+        //window.add(bar);
+        Gtk.MenuItem item_file = new Gtk.MenuItem.with_label("File");
+        bar.add(item_file);
+        Gtk.Menu filemenu = new Gtk.Menu ();
+        item_file.set_submenu(filemenu);
 
-        // Start a task.
-        Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
-        var start_button = new ToolButton(start_img, null);
-        window.toolbar.pack_end(start_button);
-        start_button.clicked.connect(start_timer);
+        Gtk.MenuItem item_new = new Gtk.MenuItem.with_label("New");
+        filemenu.add(item_new);
+        item_new.activate.connect(window.dialog.show_all);
 
-        var separator = new Gtk.SeparatorToolItem();
-        
-        separator.draw = false;
-        separator.set_expand(true);
-        window.toolbar.pack_end(separator);
+        Gtk.MenuItem item_delete = new Gtk.MenuItem.with_label("Delete");
+        filemenu.add(item_delete);
+        item_delete.activate.connect(remove_task);
 
-        // Menu button
-        var menu = new Gtk.Menu();
-        Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
-        menu.add(about);
-        about.activate.connect (() => {
+        Gtk.MenuItem item_help = new Gtk.MenuItem.with_label("Help");
+        bar.add(item_help);
+        Gtk.Menu helpmenu = new Gtk.Menu();
+        item_help.set_submenu(helpmenu);
+
+        Gtk.MenuItem item_about = new Gtk.MenuItem.with_label("About");
+        helpmenu.add(item_about);
+
+        item_about.activate.connect (() => {
             Gtk.AboutDialog about_dialog = new AboutPomodorino();
             //Gtk.AboutDialog about_dialog = new AboutPomodorino();
             try {
@@ -99,8 +92,49 @@ public class Pomodorino {
             }
               about_dialog.show();
         });
-        var menu_button = new AppMenu(menu);
-        window.toolbar.pack_end(menu_button);
+
+        // Add a task.
+        Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
+        ToolButton new_button = new ToolButton (new_img, null);
+        window.toolbar.add(new_button);
+        new_button.clicked.connect(window.dialog.show_all);
+        
+        // Delete a task.
+        Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
+        var delete_button = new ToolButton(delete_img, null);
+        var delete_style = delete_button.get_style_context ();
+        delete_style.add_class("destructive-action");
+        window.toolbar.add(delete_button);
+        delete_button.clicked.connect(remove_task);
+
+        var separator = new Gtk.SeparatorToolItem();
+        
+        separator.draw = false;
+        separator.set_expand(true);
+        window.toolbar.add(separator);
+
+        // Start a task.
+        Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
+        var start_button = new ToolButton(start_img, null);
+        window.toolbar.add(start_button);
+        start_button.clicked.connect(start_timer);
+
+        // // Menu button
+        // var menu = new Gtk.Menu();
+        // Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
+        // menu.add(about);
+        // about.activate.connect (() => {
+        //     Gtk.AboutDialog about_dialog = new AboutPomodorino();
+        //     //Gtk.AboutDialog about_dialog = new AboutPomodorino();
+        //     try {
+        //         about_dialog.logo = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
+        //     } catch (Error e) {
+        //         stdout.printf("Error: %s", e.message);
+        //     }
+        //       about_dialog.show();
+        // });
+        // var menu_button = new MenuButton();
+        // window.toolbar.pack_end(menu_button);
         
         // Scrolling is nice.
         var scroll = new ScrolledWindow(null, null);
@@ -109,6 +143,7 @@ public class Pomodorino {
 
         // Time to put everything together.
         var vbox = new Box(Orientation.VERTICAL, 0);
+        vbox.pack_start(bar, false, true, 0);
         vbox.pack_start(window.toolbar, false, true, 0);
         vbox.pack_start(scroll, true, true, 0);
         window.add(vbox);
@@ -166,10 +201,10 @@ public class Pomodorino {
             GLib.Value date;
             GLib.Value priority;
 
-            window.store.get_value(iter, 0, out date);
-            window.store.get_value(iter, 1, out priority);
-            window.store.get_value(iter, 2, out name);
-            tasks.add((string) name + "||" + (string) date + "||" + (string) priority);
+            window.store.get_value(iter, 0, out priority);
+            window.store.get_value(iter, 1, out name);
+            window.store.get_value(iter, 2, out date);
+            tasks.add((string) name + "||" + (string) priority + "||" + (string) date);
             return false;
         };
         window.store.foreach(add_to_tasks);
