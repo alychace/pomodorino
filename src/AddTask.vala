@@ -31,7 +31,7 @@ public class AddTask : Dialog {
         this.modal = true;
 
         var hbox = new Box(Orientation.HORIZONTAL, 20);
-        var label = new Gtk.Label("Priority:    ");
+        var label = new Gtk.Label("Color:    ");
         priority_entry = new Entry();
         content.pack_start(hbox, false, true, 0);
         hbox.pack_start(label);

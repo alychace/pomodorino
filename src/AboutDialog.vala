@@ -22,13 +22,13 @@ public class AboutPomodorino : Gtk.AboutDialog { //Granite.Widgets.AboutDialog {
     // Dialog window to add tasks.
     
     public AboutPomodorino() {
-        this.authors = {"Thomas Chace"};
-        this.program_name = "Pomodorino";
-        this.copyright = "Copyright © 2014 Thomas Chace";
-        this.comments = "Pomodorino time/todo list manager.";
+        this.authors = {"Alexandra Chace"};
+        this.program_name = "Tomato";
+        this.copyright = "Copyright © 2014 Alexandra Chace";
+        this.comments = "Tomato task list and time manager.";
         this.version = "0.6";
         this.license = """To-do list application drawing inspiration from the pomodoro technique
-        Copyright (C) 2014 Thomas Chace
+        Copyright (C) 2014 Alexandra Chace
 
         Pomodorino is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by

@@ -59,79 +59,31 @@ public class Pomodorino {
     private void build_ui() {
         window.build_ui();
 
-        Gtk.MenuBar bar = new Gtk.MenuBar();
-        //window.add(bar);
-        Gtk.MenuItem item_file = new Gtk.MenuItem.with_label("Tasks");
-        bar.add(item_file);
-        Gtk.Menu filemenu = new Gtk.Menu ();
-        item_file.set_submenu(filemenu);
+        // headerbar.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUBAR);
+        // Gtk.Toolbar headerbar = new Gtk.GeaderBar();
+        //headerbar.show_close_button = true;
+        //headerbar.set_title("Tomato");
 
-        Gtk.MenuItem item_new = new Gtk.MenuItem.with_label("New");
-        filemenu.add(item_new);
-        item_new.activate.connect(window.dialog.show_all);
-
-        Gtk.MenuItem item_delete = new Gtk.MenuItem.with_label("Delete");
-        filemenu.add(item_delete);
-        item_delete.activate.connect(remove_task);
-
-        filemenu.add(new Gtk.SeparatorMenuItem());
-
-        Gtk.MenuItem item_timer = new Gtk.MenuItem.with_label("Start Timer");
-        filemenu.add(item_timer);
-        item_timer.activate.connect(start_timer);
-
-        filemenu.add(new Gtk.SeparatorMenuItem());
-
-        Gtk.MenuItem item_quit = new Gtk.MenuItem.with_label("Quit");
-        filemenu.add(item_quit);
-        item_quit.activate.connect(quit);
-
-        Gtk.MenuItem item_help = new Gtk.MenuItem.with_label("Help");
-        bar.add(item_help);
-        Gtk.Menu helpmenu = new Gtk.Menu();
-        item_help.set_submenu(helpmenu);
-
-        Gtk.MenuItem item_about = new Gtk.MenuItem.with_label("About");
-        helpmenu.add(item_about);
-
-        item_about.activate.connect (() => {
-            Gtk.AboutDialog about_dialog = new AboutPomodorino();
-            //Gtk.AboutDialog about_dialog = new AboutPomodorino();
-            try {
-                about_dialog.logo = new Gdk.Pixbuf.from_file("/opt/pomodorino/images/logo.png");
-            } catch (Error e) {
-                stdout.printf("Error: %s", e.message);
-            }
-              about_dialog.show();
-        });
-
+        
         // Add a task.
-        Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.SMALL_TOOLBAR);
-        ToolButton new_button = new ToolButton (new_img, null);
+        Image new_img = new Image.from_icon_name ("document-new", Gtk.IconSize.MENU);
+        var new_button = new Gtk.Button();
+        new_button.set_image(new_img);
+        //new_button.get_accessible().set_name(_("New"));
         window.toolbar.add(new_button);
         new_button.clicked.connect(window.dialog.show_all);
         
         // Delete a task.
-        Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.SMALL_TOOLBAR);
-        var delete_button = new ToolButton(delete_img, null);
+        Image delete_img = new Image.from_icon_name ("edit-delete", Gtk.IconSize.MENU);
+        var delete_button = new Gtk.Button();
+        delete_button.set_image(delete_img);
         var delete_style = delete_button.get_style_context ();
         delete_style.add_class("destructive-action");
         window.toolbar.add(delete_button);
         delete_button.clicked.connect(remove_task);
 
-        var separator = new Gtk.SeparatorToolItem();
-        
-        separator.draw = false;
-        separator.set_expand(true);
-        window.toolbar.add(separator);
 
-        // Start a task.
-        Image start_img = new Image.from_icon_name("media-playback-start", IconSize.SMALL_TOOLBAR);
-        var start_button = new ToolButton(start_img, null);
-        window.toolbar.add(start_button);
-        start_button.clicked.connect(start_timer);
-
-        // // Menu button
+        // Menu button
         // var menu = new Gtk.Menu();
         // Gtk.MenuItem about = new Gtk.MenuItem.with_label("About");
         // menu.add(about);
@@ -155,42 +107,11 @@ public class Pomodorino {
 
         // Time to put everything together.
         var vbox = new Box(Orientation.VERTICAL, 0);
-        vbox.pack_start(bar, false, true, 0);
         vbox.pack_start(window.toolbar, false, true, 0);
         vbox.pack_start(scroll, true, true, 0);
         window.add(vbox);
     }
 
-    public void start_timer() {
-        save();
-        if (window.current in this.backend.tasks) {
-            var timer = new Timer();
-            timer.set_transient_for(window); // Makes it a modal dialog.
-            timer.destroy.connect(() => {
-                timer.running = false;
-            });
-            
-            // Starts a timer for the current task.
-            timer.task = window.current.split("||")[0];
-            timer.show_all();
-            timer.start();
-        } else {
-            // If the current task isn't in the backend yet (AKA: It's been deleted), prompt the user.
-            Gtk.MessageDialog msg = new Gtk.MessageDialog (this.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "Please select a task to start.");
-            msg.response.connect ((response_id) => {
-            switch (response_id) {
-                case Gtk.ResponseType.OK:
-                    msg.destroy();
-                    break;
-                case Gtk.ResponseType.DELETE_EVENT:
-                    msg.destroy();
-                    break;
-            }
-            });
-            msg.show();
-        }
-    }
-    
     public void show() {
         build_indicator();
         window.show_all();
@@ -216,7 +137,7 @@ public class Pomodorino {
             window.store.get_value(iter, 0, out priority);
             window.store.get_value(iter, 1, out name);
             window.store.get_value(iter, 2, out date);
-            tasks.add((string) name + "||" + (string) priority + "||" + (string) date);
+            tasks.add((string) priority + "||" + (string) name + "||" + (string) date);
             return false;
         };
         window.store.foreach(add_to_tasks);
@@ -239,7 +160,7 @@ public class Pomodorino {
         Gtk.main_quit();
     }
     private void build_indicator() {
-        var indicator = new AppIndicator.Indicator("Pomodorino", "/opt/pomodorino/images/logo.png",
+        var indicator = new AppIndicator.Indicator("Tomato", "/opt/pomodorino/images/logo.png",
                                       AppIndicator.IndicatorCategory.APPLICATION_STATUS);
 
         indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
@@ -247,13 +168,13 @@ public class Pomodorino {
         var menu = new Gtk.Menu();
 
         // Add Timer Button
-        var timer_item = new Gtk.MenuItem.with_label("Start Timer");
-        timer_item.activate.connect(() => {
-            indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
-            start_timer();
-        });
-        timer_item.show();
-        menu.append(timer_item);
+        // var timer_item = new Gtk.MenuItem.with_label("Start Timer");
+        // timer_item.activate.connect(() => {
+        //     indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
+        //     start_timer();
+        // });
+        // timer_item.show();
+        // menu.append(timer_item);
 
         var show_item = new Gtk.MenuItem.with_label("Hide");
         show_item.show();

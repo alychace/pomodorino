@@ -34,7 +34,7 @@ public class TaskStore : Object {
             var day = now.get_day_of_month();
             var month = now.get_month();
             var year = now.get_year();
-            this.tasks.add("Example Task 1||1||" + day.to_string() + "/" + month.to_string() + "/" + year.to_string());
+            this.tasks.add("green||Example Task||" + day.to_string() + "/" + month.to_string() + "/" + year.to_string());
         } else {
             //this.settings_file.create();
         }
